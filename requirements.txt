@@ -1,0 +1,5 @@
+zipfile>=1.0
+
+re>=1.0
+ 
+urllib3==1.7

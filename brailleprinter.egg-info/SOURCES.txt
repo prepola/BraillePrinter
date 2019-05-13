@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST.in
+README.md
+requirements.txt
+setup.cfg
+setup.py
+brailleprinter.egg-info/PKG-INFO
+brailleprinter.egg-info/SOURCES.txt
+brailleprinter.egg-info/dependency_links.txt
+brailleprinter.egg-info/not-zip-safe
+brailleprinter.egg-info/top_level.txt
