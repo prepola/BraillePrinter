@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "brailleprinter-f4c63",
+  "private_key_id": "5026aae7dbaaca58a07b98a20cc672ac01ef48fd",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDHFOIwNxpWHe4Q\nI3sTQypQQCjmNdNF7UCV/KwkOUqBw+bKqzv7GsGnN7n3InRd29DA+GNyctXK4g0K\ndzcLuR3o/b2JDCu/0W8OBf79LmqCwQ13yvLfVbccQGWGFbJ6EOkP4uOy86VZxj7K\nfj84zsAiKGyMZlu3Rp7uPYaJ/NMONBLXVz/pvhyDHSZHLcevuVUpK28uNpxjNTGP\nVfAKn/pwMnC9EAdaJVtBgM2WIlU53AdJSiP4vx5qlKDu5LaY3qZ+XRtBR/1eE6mh\nIk84OEcGe2xgHy7QN3/QmaYF8d96faWAPECzjWUo9e0S2zs1IbHrsOswmYBfctpr\nqn2f3qRvAgMBAAECggEAKnZjWkpehTDEFtAij7S7QTu2HYgshJU6ueMXanCH2k7J\nGsBUPlZyKLMDqNlB/cUFbStttrsUq730bx+Hb6ov3YLFmwYsDLFkoRaZUTJFyJbZ\nwwvYKtezA0UfAm79TvjtZRSNYZ2DTrcwrGsqG/lJVN/Pa1Dnzhszifg4ipURBU2o\nl6wCX2/LaqPT7JLLJ/lb2VCnUvY8Z++09KPUjs3c1RnYHupgB3LKcJbW//j62du4\nGTAKA2313qEaa6YNhCQQy0D+2s1nWz95rDBWfHiVRf50rc8UBqFDADGT4+gO2Rek\nEWWu7RgPxujsS4x1GgLBZItbITM6OjFShJTE7V3RdQKBgQDw1KAI3jy45icHSFcK\nPgf2voX2WqDapKqWdn+dodf/eqQK33spueJtkbJxnYYH10mXhVMkOYTFbbeJ1+tM\ntDMXPR0ig6hn1tpcZvzh/U9wZnmxXLnGrIYwL8+Cqq7y+6HULe7SeKyurGJniUOe\na3GFqYDDsRdRBc8BKzjCUtEWAwKBgQDTnw8e4X2Lv8WD1VE/CX747WEyCEEmOFOO\ncekUsG9+lzDiJc1dbFhSMf56LJE5w8V8uWeGU6l9IztLsQ7pPCdjylCEJjyH4bKB\nDWMRXxP9jw/wW0w/IYRk2snAggFbCP2yAQ7DjJEfjbuPo1iVJsxgwkLp46kOsrMG\n5pdgJojSJQKBgQCb4NPwyX++IeHzGcSUsY/QCoOE8CYbPufXWb3CFsZK62OQUhRS\n7qj7SImadl4RZyyP8VDeKoigjSJ2CxaW4DANg5X/B/6Rr4RIuLRHxgCL/RgZT65D\nRNnaCKgkqDtytKKLRmvFOSx0JsnOwA7PVDX3UL4ya8Zuv/a7h/FF/fqtZwKBgQCT\n0MmOB3FbOROs10bN4kMnex/mA7AGE1gB6n0lL2xhnxfNDxyYggJbP4KCMjkqgR2j\n1hmC0VNVDlPvtfg1YAgfgwSkmdS0ESlPTVuCmcfr148Jk6v5eN7yV4SPDAAIZ4pV\nWLnIS5pe0PBPD4jjfdtKRsbYemXu11GHo2/fAGuXZQKBgQCK+a2K97ye0N/jirEO\np8ajCp8gGPNCVSZAG8wqaZumdI1Jv8NgK0bblSdlx5/qyPWIQ436lTabQodmxucI\nQu2kHfrilKTI5EcQ2H2HQqpD/yKHvrtT5rXA0laTrJdJnW20Y6X1XciMqNnIc1KH\n/MCed8l4qRy/+3CztGqF9/yyvg==\n-----END PRIVATE KEY-----\n",
+  "client_email": "stt-in-resp@brailleprinter-f4c63.iam.gserviceaccount.com",
+  "client_id": "115410951846825777048",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/stt-in-resp%40brailleprinter-f4c63.iam.gserviceaccount.com"
+}
