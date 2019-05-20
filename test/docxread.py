@@ -59,7 +59,7 @@ while True :
             temp = temp + '\t'
         elif node.tag == ns + 'bookmarkStart' : # 행렬시작
             out_process('-'*10 + '행렬시작' + '-'*10)
-        elif node.tag == ns + 'bookmarkEnd': # 행렬종료m
+        elif node.tag == ns + 'bookmarkEnd': # 행렬종료
             matrix_state = False
             row_state = False
             out_process(str_init(temp, node.text, False, word_num))
