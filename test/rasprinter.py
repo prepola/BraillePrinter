@@ -13,94 +13,121 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 mod_list = [1, 2, 3, 4, 5]
 fontsize_1 = 30
 
+guiTextlist = [
+        ["메인 화면", "음성인식 프린트\n시작", "녹음된 음성파일을 이용하여\n프린트", "문서 파일을 이용하여\n프린트", "--기타기능--"],
+        ["프린트", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
+        ["녹음파일로 기록", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
+        ["문서파일의 내용을 기록", "문서 선택", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
+        ["--기타기능--", "--기타기능--", "--기타기능--", "--기타기능--", "뒤로가기"],
+        ["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"]
+]
+
 class Ui_Dialog(object):
     mod_num = int()
-    def __init__(self, Dialog):
-        Dialog.setObjectName("Dialog")
-        Dialog.resize(1024, 600)
-        Dialog.setWindowTitle("음성인식 점자프린터")
+    def __init__(self):
+        self.mainDialog = QtWidgets.QDialog()
+        self.mainDialog.setObjectName("mainDialog")
+        self.mainDialog.resize(1024, 600)
+        self.mainDialog.setWindowTitle("음성인식 점자프린터")
         
         # Layout
-        self.gridLayout = QtWidgets.QGridLayout()
-        self.gridLayout.setContentsMargins(75, 40, 75, 50)
-        self.gridLayout.setObjectName("gridLayout")
-        self.gridLayout_2 = QtWidgets.QGridLayout()
-        self.gridLayout_2.setContentsMargins(20, 0, 20, 0)
-        self.gridLayout_2.setObjectName("gridLayout_2")
-        self.gridLayout_3 = QtWidgets.QGridLayout(Dialog)
-        self.gridLayout_3.setObjectName("gridLayout_3")
-        self.gridLayout_3.addLayout(self.gridLayout, 1, 0, 1, 1)
-        self.gridLayout_3.addLayout(self.gridLayout_2, 0, 0, 1, 1)
+        self.mainLayout = QtWidgets.QGridLayout() # Buttons
+        self.mainLayout.setContentsMargins(75, 0, 75, 50)
+        self.mainLayout.setObjectName("mainLayout")
+        self.mainLayout_2 = QtWidgets.QGridLayout() # mainInfo and spacer
+        self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
+        self.mainLayout_2.setObjectName("mainLayout_2")
+        self.mainLayout_3 = QtWidgets.QGridLayout(self.mainDialog) # mainLayout and mainLayout_2
+        self.mainLayout_3.setObjectName("mainLayout_3")
+        self.mainLayout_3.addLayout(self.mainLayout, 1, 0, 1, 1)
+        self.mainLayout_3.addLayout(self.mainLayout_2, 0, 0, 1, 1)
 
         # Button
-        self.btn_list = [QtWidgets.QPushButton()] * 4
+        self.mainBtnlist = [QtWidgets.QPushButton()] * 4
         for i in range(4):
-            self.btn_list[i] = QtWidgets.QPushButton(Dialog)
-            self.btn_list[i].setMinimumSize(QtCore.QSize(300, 175))
-            self.btn_list[i].setObjectName("btn_list["+str(i)+"]")
-            self.btn_list[i].setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-        self.gridLayout.addWidget(self.btn_list[0], 0, 0, 1, 1)
-        self.gridLayout.addWidget(self.btn_list[1], 0, 1, 1, 1)
-        self.gridLayout.addWidget(self.btn_list[2], 1, 0, 1, 1)
-        self.gridLayout.addWidget(self.btn_list[3], 1, 1, 1, 1)
+            self.mainBtnlist[i] = QtWidgets.QPushButton(self.mainDialog)
+            self.mainBtnlist[i].setMinimumSize(QtCore.QSize(300, 175))
+            self.mainBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
+            self.mainBtnlist[i].setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+            self.mainLayout.addWidget(self.mainBtnlist[i], int(i/2), int(i%2), 1, 1)
+        self.mainBtnlist[0].clicked.connect(self.btn_1)
+        self.mainBtnlist[1].clicked.connect(self.btn_2)
+        self.mainBtnlist[2].clicked.connect(self.btn_3)
+        self.mainBtnlist[3].clicked.connect(self.btn_back)
 
-        # textBrowser
-        self.textBrowser = QtWidgets.QTextBrowser(Dialog)
-        self.textBrowser.setMinimumSize(QtCore.QSize(0, 40))
-        self.textBrowser.setMaximumSize(QtCore.QSize(500, 60))
-        self.textBrowser.setObjectName("textBrowser")
-        self.textBrowser.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-        self.gridLayout_2.addWidget(self.textBrowser, 0, 0, 1, 1)
-
-        # spacerItem
-        spacerItem = QtWidgets.QSpacerItem(680, 1, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
-        self.gridLayout_2.addItem(spacerItem, 0, 1, 1, 1)
+        # mainInfo
+        self.mainInfo = QtWidgets.QTextBrowser(self.mainDialog)
+        self.mainInfo.setMinimumSize(QtCore.QSize(0, 45))
+        self.mainInfo.setMaximumSize(QtCore.QSize(500, 45))
+        self.mainInfo.setObjectName("mainInfo")
+        self.mainInfo.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+        self.mainLayout_2.addWidget(self.mainInfo, 0, 0, 1, 1)
         
         self.refreshUi(self.mod_num)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(self.mainDialog)
+
+        self.mainDialog.show()
+
+        # printDialog
+        self.printDialog = QtWidgets.QDialog()
+        self.printDialog.setObjectName("printDialog")
+        self.printDialog.resize(1024, 600)
+        self.printDialog.setWindowTitle("음성인식 점자프린터")
+
+        self.printLayout = QtWidgets.QGridLayout() # mainInfo and spacer
+        self.printLayout.setContentsMargins(20, 30, 20, 30)
+        self.printLayout.setObjectName("printLayout")
+        self.printInfo = QtWidgets.QTextBrowser(self.printDialog)
+        self.printInfo.setMinimumSize(QtCore.QSize(0, 45))
+        self.printInfo.setMaximumSize(QtCore.QSize(500, 45))
+        self.printInfo.setObjectName("printInfo")
+        self.printInfo.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+        self.printLayout.addWidget(self.printInfo, 0, 0, 1, 1)
+
+        self.printLayout_2 = QtWidgets.QGridLayout() # mainInfo
+        self.printTextwork = QtWidgets.QTextBrowser(self.printDialog)
+        self.printTextwork.setMinimumSize(QtCore.QSize(0, 245))
+        self.printTextwork.setMaximumSize(QtCore.QSize(1200, 245))
+        self.printTextwork.setObjectName("printTextwork")
+        self.printTextwork.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+        self.printLayout_2.addWidget(self.printTextwork, 0, 0, 1, 1)
+        self.printLayout_2.setContentsMargins(75, 0, 75, 0)
+
+        self.printLayout_3 = QtWidgets.QGridLayout() # Button
+        self.printBtnlist = [QtWidgets.QPushButton()] * 4
+        for i in range(4):
+            self.printBtnlist[i] = QtWidgets.QPushButton(self.printDialog)
+            self.printBtnlist[i].setMinimumSize(QtCore.QSize(300, 75))
+            self.printBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
+            self.printBtnlist[i].setStyleSheet('font-size:'+str(30)+'px;')
+            self.printLayout_3.addWidget(self.printBtnlist[i], int(i/2), int(i%2), 1, 1)
+        self.printBtnlist[3].clicked.connect(self.btn_back)
+        self.printLayout_3.setContentsMargins(75, 0, 75, 30)
+
+        self.gridLayout_7 = QtWidgets.QGridLayout(self.printDialog)
+        self.gridLayout_7.setObjectName("printLayout")
+        self.gridLayout_7.addLayout(self.printLayout, 0, 0, 1, 1)
+        self.gridLayout_7.addLayout(self.printLayout_2, 1, 0, 1, 1)
+        self.gridLayout_7.addLayout(self.printLayout_3, 2, 0, 1, 1)
+
+        self.printDialog.hide()
 
     def refreshUi(self, mod_num):
-        self.btn_list[0].clicked.connect(self.btn_1)
-        self.btn_list[1].clicked.connect(self.btn_2)
-        self.btn_list[2].clicked.connect(self.btn_3)
-        self.btn_list[3].clicked.connect(self.btn_back)
-        if (self.mod_num==1):
-            self.textBrowser.setText("프린트")
-            self.btn_list[0].setText("새로 기록")
-            self.btn_list[1].setText("기존파일에 이어서 기록")
-            self.btn_list[2].setText("")
-            self.btn_list[3].setText("뒤로가기")
-        elif (self.mod_num==2):
-            self.textBrowser.setText("녹음파일로 기록")
-            self.btn_list[0].setText("새로 기록")
-            self.btn_list[1].setText("기존파일에 이어서 기록")
-            self.btn_list[2].setText("")
-            self.btn_list[3].setText("뒤로가기")
-        elif (self.mod_num==3):
-            self.textBrowser.setText("문서파일의 내용을 기록")
-            self.btn_list[0].setText("새로 기록")
-            self.btn_list[1].setText("기존파일에 이어서 기록")
-            self.btn_list[2].setText("")
-            self.btn_list[3].setText("뒤로가기")
-        elif (self.mod_num==4):
-            self.textBrowser.setText("--기타기능--")
-            self.btn_list[0].setText("--기타기능--")
-            self.btn_list[1].setText("--기타기능--")
-            self.btn_list[2].setText("--기타기능--")
-            self.btn_list[3].setText("뒤로가기")
-        else:
-            self.textBrowser.setText("메인 화면")
-            self.btn_list[0].setText("음성인식 프린트\n시작")
-            self.btn_list[1].setText("녹음된 음성파일을 이용하여\n프린트")
-            self.btn_list[2].setText("문서 파일을 이용하여\n프린트")
-            self.btn_list[3].setText("--기타기능--")
+        for i in range(5):
+            if self.mod_num not in mod_list: self.mod_num = 0
+            if i == 0 : self.mainInfo.setText(guiTextlist[self.mod_num][i])
+            elif self.mod_num >= 5 :
+                if i == 0 : self.printInfo.setText(guiTextlist[self.mod_num][i])
+                else: self.printBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
+            else : self.mainBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
     
     def btn_1(self):
         if self.mod_num not in mod_list:
             self.mod_num = 1
             self.refreshUi(self.mod_num)
-            self.print_voice()
         elif (self.mod_num == 1):
+            self.mod_num = 5
+            self.refreshUi(self.mod_num)
             self.print_voice()
         elif (self.mod_num == 2):
             self.print_record()
@@ -122,7 +149,6 @@ class Ui_Dialog(object):
             self.extend_file()
         elif (self.mod_num == 4):
             self.others()
-            
 
     def btn_3(self):
         if self.mod_num not in mod_list:
@@ -146,6 +172,8 @@ class Ui_Dialog(object):
     
     def print_voice(self):
         print("음성프린트 기능을 클릭 하셨습니다.")
+        self.mainDialog.hide()
+        self.printDialog.show()
 
     def print_record(self):
         print("녹음프린트 기능을 클릭 하셨습니다.")
@@ -160,17 +188,19 @@ class Ui_Dialog(object):
         print("외부파일 기능을 클릭 하셨습니다.")
 
     def back(self):
+        if self.printDialog.isVisible:
+            self.mainDialog.show()
+            self.printDialog.hide()
         print("뒤로")
 
     def noone(self):
         return None
 
-
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    Dialog = QtWidgets.QDialog()
-    ui = Ui_Dialog(Dialog)
-    Dialog.show()
+    # mainDialog = QtWidgets.QDialog()
+    ui = Ui_Dialog()
+    # mainDialog.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
