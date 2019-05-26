@@ -2,6 +2,9 @@
 
 import sys
 import io
+import os
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from python_raspberry import stt
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 # 1: print_ui
@@ -9,8 +12,9 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 # 3: document_ui
 # 4: undefined_ui
 # 5: input_ui
+# 6: feedback_ui
 # others: main_ui
-mod_list = [1, 2, 3, 4, 5]
+mod_list = [1, 2, 3, 4, 5, 6]
 fontsize_1 = 30
 
 guiTextlist = [
@@ -19,8 +23,19 @@ guiTextlist = [
         ["녹음파일로 기록", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
         ["문서파일의 내용을 기록", "문서 선택", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
         ["--기타기능--", "--기타기능--", "--기타기능--", "--기타기능--", "뒤로가기"],
-        ["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"]
+        ["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"],
+        ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"]
 ]
+workTextdic = {
+        'duplicate':'중복되는 파일이 존재합니다.\n다시 시도해주십시요.',
+        'start':'안녕하세요\n기록을 시작하기전에 제목을 입력해야 합니다.\n',
+        'readytitle':'준비가 되었다면 좌측 상단 버튼을 눌러 제목을 입력해주세요.',
+        'readybody':'좌측 상단 버튼을 눌러 기록을 시작합니다.',
+        'fatal':'비정상 종료됨\n입력종료 버튼을 눌러주세요.',
+        'overtime':'입력 시간이 초과하였거나 입력에 실패하였습니다.\n다시 시도해주십시요.',
+        'isright':'다음 내용이 맞습니까?',
+        'newline':'다음줄로 이동합니다.'
+}
 
 class Ui_Dialog(object):
     mod_num = int()
@@ -101,6 +116,7 @@ class Ui_Dialog(object):
             self.printBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
             self.printBtnlist[i].setStyleSheet('font-size:'+str(30)+'px;')
             self.printLayout_3.addWidget(self.printBtnlist[i], int(i/2), int(i%2), 1, 1)
+        self.printBtnlist[0].clicked.connect(self.btn_1)
         self.printBtnlist[3].clicked.connect(self.btn_back)
         self.printLayout_3.setContentsMargins(75, 0, 75, 30)
 
@@ -115,10 +131,10 @@ class Ui_Dialog(object):
     def refreshUi(self, mod_num):
         for i in range(5):
             if self.mod_num not in mod_list: self.mod_num = 0
-            if i == 0 : self.mainInfo.setText(guiTextlist[self.mod_num][i])
             elif self.mod_num >= 5 :
                 if i == 0 : self.printInfo.setText(guiTextlist[self.mod_num][i])
                 else: self.printBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
+            if i == 0 : self.mainInfo.setText(guiTextlist[self.mod_num][i])          
             else : self.mainBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
     
     def btn_1(self):
@@ -128,14 +144,19 @@ class Ui_Dialog(object):
         elif (self.mod_num == 1):
             self.mod_num = 5
             self.refreshUi(self.mod_num)
-            self.print_voice()
+            self.mainDialog.hide()
+            self.printDialog.show()
         elif (self.mod_num == 2):
             self.print_record()
         elif (self.mod_num == 3):
             self.print_document()
         elif (self.mod_num == 4):
             self.others()
-
+        elif (self.mod_num == 5):
+            self.mod_num = 6
+            self.refreshUi(self.mod_num)
+            self.print_voice()
+        
     def btn_2(self):
         if self.mod_num not in mod_list:
             self.mod_num = 2
@@ -166,14 +187,45 @@ class Ui_Dialog(object):
 
     def btn_back(self):
         if self.mod_num in mod_list:
+            self.printTextwork.setText('')
             self.mod_num = 0
             self.refreshUi(self.mod_num)
             self.back()
     
     def print_voice(self):
-        print("음성프린트 기능을 클릭 하셨습니다.")
-        self.mainDialog.hide()
-        self.printDialog.show()
+        # print("음성프린트 기능을 클릭 하셨습니다.")
+        self.printTextwork.setText(workTextdic['start'])
+        while 1:
+            self.printTextwork.append(workTextdic['readytitle'])
+            try:
+                title_word = stt.trans()
+            except:
+                print("bad auth JSON")
+                self.printTextwork.append(workTextdic['fatal'])
+                break
+            if not isinstance(title_word,str):
+                self.printTextwork.append(workTextdic['overtime'])
+                continue
+            self.printTextwork.append(title_word)
+            self.printTextwork.append(workTextdic['isright'])
+
+            # if os.path.isfile('/mnt/usb'+title_word+'.txt'):
+            if os.path.isfile(title_word+'.txt'):
+                self.printTextwork.append(workTextdic['duplicate'])
+                continue
+            
+            # with open('/mnt/usb'+title_word+'.txt','w') as fileh:
+            with open(title_word+'.txt','w') as fileh:
+                self.printTextwork.append(workTextdic['readybody'])
+                while 1:
+                    typing_text = stt.trans()
+                    if not isinstance(title_word,str):
+                        self.printTextwork.append(workTextdic['overtime'])
+                        continue
+                    self.printTextwork.append(typing_text)
+                    self.printTextwork.append(workTextdic['isright'])
+
+                    self.printTextwork.append(workTextdic['newline'])
 
     def print_record(self):
         print("녹음프린트 기능을 클릭 하셨습니다.")
