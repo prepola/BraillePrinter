@@ -11,10 +11,11 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 # 2: recording_file_ui
 # 3: document_ui
 # 4: undefined_ui
-# 5: input_ui
-# 6: feedback_ui
+# 5: title_input
+# 6: body_input
+# 7: feedback_ui
 # others: main_ui
-mod_list = [1, 2, 3, 4, 5, 6]
+mod_list = [1, 2, 3, 4, 5, 6, 7]
 fontsize_1 = 30
 
 guiTextlist = [
@@ -64,7 +65,7 @@ class Ui_Dialog(object):
             self.mainBtnlist[i].setMinimumSize(QtCore.QSize(300, 175))
             self.mainBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
             self.mainBtnlist[i].setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-            self.mainLayout.addWidget(self.mainBtnlist[i], int(i/2), int(i%2), 1, 1)
+            self.mainLayout.addWidget(self.mainBtnlist[i], int(i//2), int(i%2), 1, 1)
         self.mainBtnlist[0].clicked.connect(self.btn_1)
         self.mainBtnlist[1].clicked.connect(self.btn_2)
         self.mainBtnlist[2].clicked.connect(self.btn_3)
@@ -89,22 +90,22 @@ class Ui_Dialog(object):
         self.printDialog.resize(1024, 600)
         self.printDialog.setWindowTitle("음성인식 점자프린터")
 
-        self.printLayout = QtWidgets.QGridLayout() # mainInfo and spacer
-        self.printLayout.setContentsMargins(20, 30, 20, 30)
-        self.printLayout.setObjectName("printLayout")
         self.printInfo = QtWidgets.QTextBrowser(self.printDialog)
         self.printInfo.setMinimumSize(QtCore.QSize(0, 45))
         self.printInfo.setMaximumSize(QtCore.QSize(500, 45))
         self.printInfo.setObjectName("printInfo")
         self.printInfo.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+        self.printLayout = QtWidgets.QGridLayout() # mainInfo and spacer
+        self.printLayout.setContentsMargins(20, 30, 20, 30)
+        self.printLayout.setObjectName("printLayout")
         self.printLayout.addWidget(self.printInfo, 0, 0, 1, 1)
 
-        self.printLayout_2 = QtWidgets.QGridLayout() # mainInfo
         self.printTextwork = QtWidgets.QTextBrowser(self.printDialog)
         self.printTextwork.setMinimumSize(QtCore.QSize(0, 245))
         self.printTextwork.setMaximumSize(QtCore.QSize(1200, 245))
         self.printTextwork.setObjectName("printTextwork")
         self.printTextwork.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
+        self.printLayout_2 = QtWidgets.QGridLayout() # mainInfo
         self.printLayout_2.addWidget(self.printTextwork, 0, 0, 1, 1)
         self.printLayout_2.setContentsMargins(75, 0, 75, 0)
 
@@ -115,7 +116,7 @@ class Ui_Dialog(object):
             self.printBtnlist[i].setMinimumSize(QtCore.QSize(300, 75))
             self.printBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
             self.printBtnlist[i].setStyleSheet('font-size:'+str(30)+'px;')
-            self.printLayout_3.addWidget(self.printBtnlist[i], int(i/2), int(i%2), 1, 1)
+            self.printLayout_3.addWidget(self.printBtnlist[i], int(i//2), int(i%2), 1, 1)
         self.printBtnlist[0].clicked.connect(self.btn_1)
         self.printBtnlist[3].clicked.connect(self.btn_back)
         self.printLayout_3.setContentsMargins(75, 0, 75, 30)
@@ -138,6 +139,7 @@ class Ui_Dialog(object):
             else : self.mainBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
     
     def btn_1(self):
+        print(self.mod_num)
         if self.mod_num not in mod_list:
             self.mod_num = 1
             self.refreshUi(self.mod_num)
@@ -155,7 +157,13 @@ class Ui_Dialog(object):
         elif (self.mod_num == 5):
             self.mod_num = 6
             self.refreshUi(self.mod_num)
-            self.print_voice()
+            self.title = self.print_title()
+        elif (self.mod_num == 6):
+            self.mod_num = 7
+            self.body = self.print_body()
+        elif (self.mod_num == 7):
+            self.mod_num = 6
+            self.commit_text(self.title, self.body)
         
     def btn_2(self):
         if self.mod_num not in mod_list:
@@ -192,7 +200,7 @@ class Ui_Dialog(object):
             self.refreshUi(self.mod_num)
             self.back()
     
-    def print_voice(self):
+    def print_title(self):
         # print("음성프린트 기능을 클릭 하셨습니다.")
         self.printTextwork.setText(workTextdic['start'])
         while 1:
@@ -203,29 +211,38 @@ class Ui_Dialog(object):
                 print("bad auth JSON")
                 self.printTextwork.append(workTextdic['fatal'])
                 break
+
             if not isinstance(title_word,str):
                 self.printTextwork.append(workTextdic['overtime'])
                 continue
             self.printTextwork.append(title_word)
             self.printTextwork.append(workTextdic['isright'])
 
-            # if os.path.isfile('/mnt/usb'+title_word+'.txt'):
+            # if os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
             if os.path.isfile(title_word+'.txt'):
                 self.printTextwork.append(workTextdic['duplicate'])
+                title_word = None
                 continue
-            
-            # with open('/mnt/usb'+title_word+'.txt','w') as fileh:
-            with open(title_word+'.txt','w') as fileh:
-                self.printTextwork.append(workTextdic['readybody'])
-                while 1:
-                    typing_text = stt.trans()
-                    if not isinstance(title_word,str):
-                        self.printTextwork.append(workTextdic['overtime'])
-                        continue
-                    self.printTextwork.append(typing_text)
-                    self.printTextwork.append(workTextdic['isright'])
+            else:
+                return title_word
 
-                    self.printTextwork.append(workTextdic['newline'])
+    def print_body(self):
+            self.printTextwork.append(workTextdic['readybody'])
+            while 1:
+                typing_text = stt.trans()
+
+                if not isinstance(typing_text,str):
+                    self.printTextwork.append(workTextdic['overtime'])
+                    continue
+                self.printTextwork.append(typing_text)
+                self.printTextwork.append(workTextdic['isright'])
+                return typing_text
+
+    def commit_text(self, title_word, typing_text):
+        # with open('/mnt/usb'+title_word+'.txt','w') as fileh: # 라즈베리파이
+        with open(title_word+'.txt','a') as fileh:
+            fileh.write(typing_text+'\n')  
+        self.printTextwork.append(workTextdic['newline'])
 
     def print_record(self):
         print("녹음프린트 기능을 클릭 하셨습니다.")
@@ -250,9 +267,7 @@ class Ui_Dialog(object):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    # mainDialog = QtWidgets.QDialog()
     ui = Ui_Dialog()
-    # mainDialog.show()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
