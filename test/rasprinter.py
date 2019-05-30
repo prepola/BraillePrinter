@@ -4,8 +4,9 @@ import sys
 import io
 import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from python_raspberry import stt
-from PyQt5 import QtCore, QtGui, QtWidgets
+# from python_raspberry import stt
+from PyQt5 import QtWidgets
+import display as dis
 
 # 1: print_ui
 # 2: recording_file_ui
@@ -25,7 +26,8 @@ guiTextlist = [
         ["문서파일의 내용을 기록", "문서 선택", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
         ["--기타기능--", "--기타기능--", "--기타기능--", "--기타기능--", "뒤로가기"],
         ["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"],
-        ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"]
+        ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
+        ["aa","aa","aa","aa","aa"]
 ]
 workTextdic = {
         'duplicate':'중복되는 파일이 존재합니다.\n다시 시도해주십시요.',
@@ -41,102 +43,32 @@ workTextdic = {
 class Ui_Dialog(object):
     mod_num = int()
     def __init__(self):
-        self.mainDialog = QtWidgets.QDialog()
-        self.mainDialog.setObjectName("mainDialog")
-        self.mainDialog.resize(1024, 600)
-        self.mainDialog.setWindowTitle("음성인식 점자프린터")
-        
-        # Layout
-        self.mainLayout = QtWidgets.QGridLayout() # Buttons
-        self.mainLayout.setContentsMargins(75, 0, 75, 50)
-        self.mainLayout.setObjectName("mainLayout")
-        self.mainLayout_2 = QtWidgets.QGridLayout() # mainInfo and spacer
-        self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
-        self.mainLayout_2.setObjectName("mainLayout_2")
-        self.mainLayout_3 = QtWidgets.QGridLayout(self.mainDialog) # mainLayout and mainLayout_2
-        self.mainLayout_3.setObjectName("mainLayout_3")
-        self.mainLayout_3.addLayout(self.mainLayout, 1, 0, 1, 1)
-        self.mainLayout_3.addLayout(self.mainLayout_2, 0, 0, 1, 1)
+        self.Dis = [
+                dis.Ui_Dialog("main",fontsize_1), 
+                dis.Ui_Dialog("print",fontsize_1),
+                dis.Ui_Dialog("extend",fontsize_1)
+        ]
 
-        # Button
-        self.mainBtnlist = [QtWidgets.QPushButton()] * 4
-        for i in range(4):
-            self.mainBtnlist[i] = QtWidgets.QPushButton(self.mainDialog)
-            self.mainBtnlist[i].setMinimumSize(QtCore.QSize(300, 175))
-            self.mainBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
-            self.mainBtnlist[i].setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-            self.mainLayout.addWidget(self.mainBtnlist[i], int(i//2), int(i%2), 1, 1)
-        self.mainBtnlist[0].clicked.connect(self.btn_1)
-        self.mainBtnlist[1].clicked.connect(self.btn_2)
-        self.mainBtnlist[2].clicked.connect(self.btn_3)
-        self.mainBtnlist[3].clicked.connect(self.btn_back)
+        for i in range(3):
+            self.Dis[i].mainBtnlist[0].clicked.connect(self.btn_1)
+            self.Dis[i].mainBtnlist[1].clicked.connect(self.btn_2)
+            self.Dis[i].mainBtnlist[2].clicked.connect(self.btn_3)
+            self.Dis[i].mainBtnlist[3].clicked.connect(self.btn_back)
 
-        # mainInfo
-        self.mainInfo = QtWidgets.QTextBrowser(self.mainDialog)
-        self.mainInfo.setMinimumSize(QtCore.QSize(0, 45))
-        self.mainInfo.setMaximumSize(QtCore.QSize(500, 45))
-        self.mainInfo.setObjectName("mainInfo")
-        self.mainInfo.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-        self.mainLayout_2.addWidget(self.mainInfo, 0, 0, 1, 1)
-        
+        self.Dis[0].mainDialog.show()
+        self.Dis[1].mainDialog.hide()
+        self.Dis[2].mainDialog.hide()
+
         self.refreshUi(self.mod_num)
-        QtCore.QMetaObject.connectSlotsByName(self.mainDialog)
-
-        self.mainDialog.show()
-
-        # printDialog
-        self.printDialog = QtWidgets.QDialog()
-        self.printDialog.setObjectName("printDialog")
-        self.printDialog.resize(1024, 600)
-        self.printDialog.setWindowTitle("음성인식 점자프린터")
-
-        self.printInfo = QtWidgets.QTextBrowser(self.printDialog)
-        self.printInfo.setMinimumSize(QtCore.QSize(0, 45))
-        self.printInfo.setMaximumSize(QtCore.QSize(500, 45))
-        self.printInfo.setObjectName("printInfo")
-        self.printInfo.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-        self.printLayout = QtWidgets.QGridLayout() # mainInfo and spacer
-        self.printLayout.setContentsMargins(20, 30, 20, 30)
-        self.printLayout.setObjectName("printLayout")
-        self.printLayout.addWidget(self.printInfo, 0, 0, 1, 1)
-
-        self.printTextwork = QtWidgets.QTextBrowser(self.printDialog)
-        self.printTextwork.setMinimumSize(QtCore.QSize(0, 245))
-        self.printTextwork.setMaximumSize(QtCore.QSize(1200, 245))
-        self.printTextwork.setObjectName("printTextwork")
-        self.printTextwork.setStyleSheet('font-size:'+str(fontsize_1)+'px;')
-        self.printLayout_2 = QtWidgets.QGridLayout() # mainInfo
-        self.printLayout_2.addWidget(self.printTextwork, 0, 0, 1, 1)
-        self.printLayout_2.setContentsMargins(75, 0, 75, 0)
-
-        self.printLayout_3 = QtWidgets.QGridLayout() # Button
-        self.printBtnlist = [QtWidgets.QPushButton()] * 4
-        for i in range(4):
-            self.printBtnlist[i] = QtWidgets.QPushButton(self.printDialog)
-            self.printBtnlist[i].setMinimumSize(QtCore.QSize(300, 75))
-            self.printBtnlist[i].setObjectName("mainBtnlist["+str(i)+"]")
-            self.printBtnlist[i].setStyleSheet('font-size:'+str(30)+'px;')
-            self.printLayout_3.addWidget(self.printBtnlist[i], int(i//2), int(i%2), 1, 1)
-        self.printBtnlist[0].clicked.connect(self.btn_1)
-        self.printBtnlist[3].clicked.connect(self.btn_back)
-        self.printLayout_3.setContentsMargins(75, 0, 75, 30)
-
-        self.gridLayout_7 = QtWidgets.QGridLayout(self.printDialog)
-        self.gridLayout_7.setObjectName("printLayout")
-        self.gridLayout_7.addLayout(self.printLayout, 0, 0, 1, 1)
-        self.gridLayout_7.addLayout(self.printLayout_2, 1, 0, 1, 1)
-        self.gridLayout_7.addLayout(self.printLayout_3, 2, 0, 1, 1)
-
-        self.printDialog.hide()
 
     def refreshUi(self, mod_num):
         for i in range(5):
-            if self.mod_num not in mod_list: self.mod_num = 0
-            elif self.mod_num >= 5 :
-                if i == 0 : self.printInfo.setText(guiTextlist[self.mod_num][i])
-                else: self.printBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
-            if i == 0 : self.mainInfo.setText(guiTextlist[self.mod_num][i])          
-            else : self.mainBtnlist[i-1].setText(guiTextlist[self.mod_num][i])
+            if mod_num not in mod_list: mod_num = 0
+            elif mod_num >= 5 :
+                if i == 0 : self.Dis[1].mainInfo.setText(guiTextlist[mod_num][i])
+                else: self.Dis[1].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
+            if i == 0 : self.Dis[0].mainInfo.setText(guiTextlist[mod_num][i])          
+            else : self.Dis[0].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
     
     def btn_1(self):
         print(self.mod_num)
@@ -146,8 +78,8 @@ class Ui_Dialog(object):
         elif (self.mod_num == 1):
             self.mod_num = 5
             self.refreshUi(self.mod_num)
-            self.mainDialog.hide()
-            self.printDialog.show()
+            self.Dis[0].mainDialog.hide()
+            self.Dis[1].mainDialog.show()
         elif (self.mod_num == 2):
             self.print_record()
         elif (self.mod_num == 3):
@@ -195,54 +127,54 @@ class Ui_Dialog(object):
 
     def btn_back(self):
         if self.mod_num in mod_list:
-            self.printTextwork.setText('')
+            self.Dis[1].workTable.setText('')
             self.mod_num = 0
             self.refreshUi(self.mod_num)
             self.back()
     
     def print_title(self):
         # print("음성프린트 기능을 클릭 하셨습니다.")
-        self.printTextwork.setText(workTextdic['start'])
+        self.Dis[1].workTable.setText(workTextdic['start'])
         while 1:
-            self.printTextwork.append(workTextdic['readytitle'])
+            self.Dis[1].workTable.append(workTextdic['readytitle'])
             try:
                 title_word = stt.trans()
             except:
                 print("bad auth JSON")
-                self.printTextwork.append(workTextdic['fatal'])
+                self.Dis[1].workTable.append(workTextdic['fatal'])
                 break
 
             if not isinstance(title_word,str):
-                self.printTextwork.append(workTextdic['overtime'])
+                self.Dis[1].workTable.append(workTextdic['overtime'])
                 continue
-            self.printTextwork.append(title_word)
-            self.printTextwork.append(workTextdic['isright'])
+            self.Dis[1].workTable.append(title_word)
+            self.Dis[1].workTable.append(workTextdic['isright'])
 
             # if os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
             if os.path.isfile(title_word+'.txt'):
-                self.printTextwork.append(workTextdic['duplicate'])
+                self.Dis[1].workTable.append(workTextdic['duplicate'])
                 title_word = None
                 continue
             else:
                 return title_word
 
     def print_body(self):
-            self.printTextwork.append(workTextdic['readybody'])
+            self.Dis[1].workTable.append(workTextdic['readybody'])
             while 1:
                 typing_text = stt.trans()
 
                 if not isinstance(typing_text,str):
-                    self.printTextwork.append(workTextdic['overtime'])
+                    self.Dis[1].workTable.append(workTextdic['overtime'])
                     continue
-                self.printTextwork.append(typing_text)
-                self.printTextwork.append(workTextdic['isright'])
+                self.Dis[1].workTable.append(typing_text)
+                self.Dis[1].workTable.append(workTextdic['isright'])
                 return typing_text
 
     def commit_text(self, title_word, typing_text):
         # with open('/mnt/usb'+title_word+'.txt','w') as fileh: # 라즈베리파이
         with open(title_word+'.txt','a') as fileh:
             fileh.write(typing_text+'\n')  
-        self.printTextwork.append(workTextdic['newline'])
+        self.Dis[1].workTable.append(workTextdic['newline'])
 
     def print_record(self):
         print("녹음프린트 기능을 클릭 하셨습니다.")
@@ -257,9 +189,9 @@ class Ui_Dialog(object):
         print("외부파일 기능을 클릭 하셨습니다.")
 
     def back(self):
-        if self.printDialog.isVisible:
-            self.mainDialog.show()
-            self.printDialog.hide()
+        if self.Dis[1].mainDialog.isVisible:
+            self.Dis[0].mainDialog.show()
+            self.Dis[1].mainDialog.hide()
         print("뒤로")
 
     def noone(self):
