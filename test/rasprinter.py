@@ -15,8 +15,9 @@ import display as dis
 # 5: title_input
 # 6: body_input
 # 7: feedback_ui
+# 8: extend_file
 # others: main_ui
-mod_list = [1, 2, 3, 4, 5, 6, 7]
+mod_list = [1, 2, 3, 4, 5, 6, 7, 8]
 fontsize_1 = 30
 
 guiTextlist = [
@@ -27,7 +28,8 @@ guiTextlist = [
         ["--기타기능--", "--기타기능--", "--기타기능--", "--기타기능--", "뒤로가기"],
         ["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"],
         ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
-        ["aa","aa","aa","aa","aa"]
+        ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
+        ["파일선택", "위", "파일선택", "아래", "뒤로가기"]
 ]
 workTextdic = {
         'duplicate':'중복되는 파일이 존재합니다.\n다시 시도해주십시요.',
@@ -64,6 +66,9 @@ class Ui_Dialog(object):
     def refreshUi(self, mod_num):
         for i in range(5):
             if mod_num not in mod_list: mod_num = 0
+            elif mod_num >= 8 :
+                if i == 0 : self.Dis[2].mainInfo.setText(guiTextlist[mod_num][i])
+                else: self.Dis[2].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
             elif mod_num >= 5 :
                 if i == 0 : self.Dis[1].mainInfo.setText(guiTextlist[mod_num][i])
                 else: self.Dis[1].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
@@ -99,20 +104,6 @@ class Ui_Dialog(object):
         
     def btn_2(self):
         if self.mod_num not in mod_list:
-            self.mod_num = 2
-            self.refreshUi(self.mod_num)
-            self.print_record()
-        elif (self.mod_num == 1):
-            self.extend_file()
-        elif (self.mod_num == 2):
-            self.extend_file()
-        elif (self.mod_num == 3):
-            self.extend_file()
-        elif (self.mod_num == 4):
-            self.others()
-
-    def btn_3(self):
-        if self.mod_num not in mod_list:
             self.mod_num = 3
             self.refreshUi(self.mod_num)
             self.print_document()
@@ -122,6 +113,32 @@ class Ui_Dialog(object):
             self.noone()
         elif (self.mod_num == 3):
             self.noone()
+        elif (self.mod_num == 4):
+            self.others()
+
+    def btn_3(self):
+        if self.mod_num not in mod_list:
+            self.mod_num = 2
+            self.refreshUi(self.mod_num)
+            self.print_record()
+        elif (self.mod_num == 1):
+            self.mod_num = 8
+            self.extend_file()
+            self.refreshUi(self.mod_num)
+            self.Dis[0].mainDialog.hide()
+            self.Dis[2].mainDialog.show()
+        elif (self.mod_num == 2):
+            self.mod_num = 8
+            self.extend_file()
+            self.refreshUi(self.mod_num)
+            self.Dis[0].mainDialog.hide()
+            self.Dis[2].mainDialog.show()
+        elif (self.mod_num == 3):
+            self.mod_num = 8
+            self.extend_file()
+            self.refreshUi(self.mod_num)
+            self.Dis[0].mainDialog.hide()
+            self.Dis[2].mainDialog.show()
         elif (self.mod_num == 4):
             self.others()
 
