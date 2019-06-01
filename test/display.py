@@ -60,8 +60,6 @@ class Ui_Dialog(object):
             self.listView.setModel(self.model)
             self.listView.setStyleSheet('font-size:'+str(fontsize)+'px;')
             self.mainLayout_3.addWidget(self.listView, 0, 0, 1, 1)
-            self.listView.setFocus()
-            self.listView.setSelectionModel(Qt.QItemSelectionModel())
 
         QtCore.QMetaObject.connectSlotsByName(self.mainDialog)
         self.mainDialog.show()

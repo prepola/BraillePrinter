@@ -5,7 +5,7 @@ import io
 import os
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 # from python_raspberry import stt
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, Qt
 import display as dis
 
 # 1: print_ui
@@ -44,6 +44,8 @@ workTextdic = {
 
 class Ui_Dialog(object):
     mod_num = int()
+    dex = 0
+
     def __init__(self):
         self.Dis = [
                 dis.Ui_Dialog("main",fontsize_1), 
@@ -74,9 +76,9 @@ class Ui_Dialog(object):
                 else: self.Dis[1].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
             if i == 0 : self.Dis[0].mainInfo.setText(guiTextlist[mod_num][i])          
             else : self.Dis[0].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
+        print(self.mod_num,guiTextlist[mod_num][0])
     
     def btn_1(self):
-        print(self.mod_num)
         if self.mod_num not in mod_list:
             self.mod_num = 1
             self.refreshUi(self.mod_num)
@@ -101,6 +103,10 @@ class Ui_Dialog(object):
         elif (self.mod_num == 7):
             self.mod_num = 6
             self.commit_text(self.title, self.body)
+        elif (self.mod_num == 8):
+            if self.dex > 0:
+                self.dex = self.dex - 1
+                self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
         
     def btn_2(self):
         if self.mod_num not in mod_list:
@@ -127,20 +133,30 @@ class Ui_Dialog(object):
             self.refreshUi(self.mod_num)
             self.Dis[0].mainDialog.hide()
             self.Dis[2].mainDialog.show()
+            self.Dis[2].listView.setFocus()
+            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
         elif (self.mod_num == 2):
             self.mod_num = 8
             self.extend_file()
             self.refreshUi(self.mod_num)
             self.Dis[0].mainDialog.hide()
             self.Dis[2].mainDialog.show()
+            self.Dis[2].listView.setFocus()
+            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
         elif (self.mod_num == 3):
             self.mod_num = 8
             self.extend_file()
             self.refreshUi(self.mod_num)
             self.Dis[0].mainDialog.hide()
             self.Dis[2].mainDialog.show()
+            self.Dis[2].listView.setFocus()
+            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
         elif (self.mod_num == 4):
             self.others()
+        elif (self.mod_num == 8):
+            if self.dex < len(self.Dis[2].itemList) - 1:
+                self.dex = 1 + self.dex
+                self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
 
     def btn_back(self):
         if self.mod_num in mod_list:
