@@ -45,6 +45,8 @@ workTextdic = {
 class Ui_Dialog(object):
     mod_num = int()
     dex = 0
+    title = None
+    typing_text = None
 
     def __init__(self):
         self.Dis = [
@@ -107,6 +109,8 @@ class Ui_Dialog(object):
             if self.dex > 0:
                 self.dex = self.dex - 1
                 self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
+                select_item = self.Dis[2].itemList[self.dex]
+                print(select_item)
         
     def btn_2(self):
         if self.mod_num not in mod_list:
@@ -135,6 +139,8 @@ class Ui_Dialog(object):
             self.Dis[2].mainDialog.show()
             self.Dis[2].listView.setFocus()
             self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
+            select_item = self.Dis[2].itemList[self.dex]
+            print(select_item)
         elif (self.mod_num == 2):
             self.mod_num = 8
             self.extend_file()
@@ -143,6 +149,8 @@ class Ui_Dialog(object):
             self.Dis[2].mainDialog.show()
             self.Dis[2].listView.setFocus()
             self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
+            select_item = self.Dis[2].itemList[self.dex]
+            print(select_item)
         elif (self.mod_num == 3):
             self.mod_num = 8
             self.extend_file()
@@ -151,19 +159,31 @@ class Ui_Dialog(object):
             self.Dis[2].mainDialog.show()
             self.Dis[2].listView.setFocus()
             self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
+            select_item = self.Dis[2].itemList[self.dex]
+            print(select_item)
         elif (self.mod_num == 4):
             self.others()
         elif (self.mod_num == 8):
-            if self.dex < len(self.Dis[2].itemList) - 1:
+            if self.dex < (len(self.Dis[2].itemList) - 1):
                 self.dex = 1 + self.dex
                 self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
+                select_item = self.Dis[2].itemList[self.dex]
+                print(select_item)
 
     def btn_back(self):
         if self.mod_num in mod_list:
             self.Dis[1].workTable.setText('')
+            self.dex = 0
+            self.title = None
+            self.typing_text = None
             self.mod_num = 0
             self.refreshUi(self.mod_num)
-            self.back()
+            if self.Dis[1].mainDialog.isVisible() | self.Dis[2].mainDialog.isVisible():
+                self.Dis[0].mainDialog.show()
+                self.Dis[1].mainDialog.hide()
+                self.Dis[2].mainDialog.hide()               
+            print("뒤로")
+        
     
     def print_title(self):
         # print("음성프린트 기능을 클릭 하셨습니다.")
@@ -220,12 +240,6 @@ class Ui_Dialog(object):
     
     def extend_file(self):
         print("외부파일 기능을 클릭 하셨습니다.")
-
-    def back(self):
-        if self.Dis[1].mainDialog.isVisible:
-            self.Dis[0].mainDialog.show()
-            self.Dis[1].mainDialog.hide()
-        print("뒤로")
 
     def noone(self):
         return None
