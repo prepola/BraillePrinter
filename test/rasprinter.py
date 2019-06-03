@@ -20,7 +20,7 @@ import display as dis
 mod_list = [1, 2, 3, 4, 5, 6, 7, 8]
 fontsize_1 = 30
 
-guiTextlist = [
+gui_textlist = [
         ["메인 화면", "음성인식 프린트\n시작", "녹음된 음성파일을 이용하여\n프린트", "문서 파일을 이용하여\n프린트", "--기타기능--"],
         ["프린트", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
         ["녹음파일로 기록", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
@@ -31,7 +31,7 @@ guiTextlist = [
         ["입력중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
         ["파일선택", "위", "파일선택", "아래", "뒤로가기"]
 ]
-workTextdic = {
+work_textdic = {
         'duplicate':'중복되는 파일이 존재합니다.\n다시 시도해주십시요.',
         'start':'안녕하세요\n기록을 시작하기전에 제목을 입력해야 합니다.\n',
         'readytitle':'준비가 되었다면 좌측 상단 버튼을 눌러 제목을 입력해주세요.',
@@ -61,34 +61,29 @@ class Ui_Dialog(object):
             self.Dis[i].mainBtnlist[2].clicked.connect(self.btn_3)
             self.Dis[i].mainBtnlist[3].clicked.connect(self.btn_back)
 
-        self.Dis[0].mainDialog.show()
-        self.Dis[1].mainDialog.hide()
-        self.Dis[2].mainDialog.hide()
+        self.change_dialog(self.mod_num, None)
+        self.refresh_ui(self.mod_num)
 
-        self.refreshUi(self.mod_num)
-
-    def refreshUi(self, mod_num):
+    def refresh_ui(self, mod_num):
         for i in range(5):
             if mod_num not in mod_list: mod_num = 0
             elif mod_num >= 8 :
-                if i == 0 : self.Dis[2].mainInfo.setText(guiTextlist[mod_num][i])
-                else: self.Dis[2].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
+                if i == 0 : self.Dis[2].mainInfo.setText(gui_textlist[mod_num][i])
+                else: self.Dis[2].mainBtnlist[i-1].setText(gui_textlist[mod_num][i])
             elif mod_num >= 5 :
-                if i == 0 : self.Dis[1].mainInfo.setText(guiTextlist[mod_num][i])
-                else: self.Dis[1].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
-            if i == 0 : self.Dis[0].mainInfo.setText(guiTextlist[mod_num][i])          
-            else : self.Dis[0].mainBtnlist[i-1].setText(guiTextlist[mod_num][i])
-        print(self.mod_num,guiTextlist[mod_num][0])
+                if i == 0 : self.Dis[1].mainInfo.setText(gui_textlist[mod_num][i])
+                else: self.Dis[1].mainBtnlist[i-1].setText(gui_textlist[mod_num][i])
+            if i == 0 : self.Dis[0].mainInfo.setText(gui_textlist[mod_num][i])          
+            else : self.Dis[0].mainBtnlist[i-1].setText(gui_textlist[mod_num][i])
+        print(self.mod_num,gui_textlist[mod_num][0])
     
     def btn_1(self):
         if self.mod_num not in mod_list:
             self.mod_num = 1
-            self.refreshUi(self.mod_num)
+            self.refresh_ui(self.mod_num)
         elif (self.mod_num == 1):
             self.mod_num = 5
-            self.refreshUi(self.mod_num)
-            self.Dis[0].mainDialog.hide()
-            self.Dis[1].mainDialog.show()
+            self.change_dialog(self.mod_num, 'print')
         elif (self.mod_num == 2):
             self.print_record()
         elif (self.mod_num == 3):
@@ -97,7 +92,7 @@ class Ui_Dialog(object):
             self.others()
         elif (self.mod_num == 5):
             self.mod_num = 6
-            self.refreshUi(self.mod_num)
+            self.change_dialog(self.mod_num, 'print')
             self.title = self.print_title()
         elif (self.mod_num == 6):
             self.mod_num = 7
@@ -108,14 +103,12 @@ class Ui_Dialog(object):
         elif (self.mod_num == 8):
             if self.dex > 0:
                 self.dex = self.dex - 1
-                self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
-                select_item = self.Dis[2].itemList[self.dex]
-                print(select_item)
+                self.set_listfocus(self.dex)
         
     def btn_2(self):
         if self.mod_num not in mod_list:
             self.mod_num = 3
-            self.refreshUi(self.mod_num)
+            self.refresh_ui(self.mod_num)
             self.print_document()
         elif (self.mod_num == 1):
             self.noone()
@@ -129,46 +122,18 @@ class Ui_Dialog(object):
     def btn_3(self):
         if self.mod_num not in mod_list:
             self.mod_num = 2
-            self.refreshUi(self.mod_num)
+            self.refresh_ui(self.mod_num)
             self.print_record()
-        elif (self.mod_num == 1):
+        elif (self.mod_num in [1, 2, 3]):
             self.mod_num = 8
-            self.extend_file()
-            self.refreshUi(self.mod_num)
-            self.Dis[0].mainDialog.hide()
-            self.Dis[2].mainDialog.show()
-            self.Dis[2].listView.setFocus()
-            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
-            select_item = self.Dis[2].itemList[self.dex]
-            print(select_item)
-        elif (self.mod_num == 2):
-            self.mod_num = 8
-            self.extend_file()
-            self.refreshUi(self.mod_num)
-            self.Dis[0].mainDialog.hide()
-            self.Dis[2].mainDialog.show()
-            self.Dis[2].listView.setFocus()
-            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
-            select_item = self.Dis[2].itemList[self.dex]
-            print(select_item)
-        elif (self.mod_num == 3):
-            self.mod_num = 8
-            self.extend_file()
-            self.refreshUi(self.mod_num)
-            self.Dis[0].mainDialog.hide()
-            self.Dis[2].mainDialog.show()
-            self.Dis[2].listView.setFocus()
-            self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
-            select_item = self.Dis[2].itemList[self.dex]
-            print(select_item)
+            self.change_dialog(self.mod_num, 'extend')
+            self.set_listfocus(self.dex)
         elif (self.mod_num == 4):
             self.others()
         elif (self.mod_num == 8):
             if self.dex < (len(self.Dis[2].itemList) - 1):
                 self.dex = 1 + self.dex
-                self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(self.dex,0))
-                select_item = self.Dis[2].itemList[self.dex]
-                print(select_item)
+                self.set_listfocus(self.dex)
 
     def btn_back(self):
         if self.mod_num in mod_list:
@@ -177,57 +142,74 @@ class Ui_Dialog(object):
             self.title = None
             self.typing_text = None
             self.mod_num = 0
-            self.refreshUi(self.mod_num)
+            self.refresh_ui(self.mod_num)
             if self.Dis[1].mainDialog.isVisible() | self.Dis[2].mainDialog.isVisible():
-                self.Dis[0].mainDialog.show()
-                self.Dis[1].mainDialog.hide()
-                self.Dis[2].mainDialog.hide()               
+                self.change_dialog(self.mod_num, None)              
             print("뒤로")
-        
+    
+    def change_dialog(self, mod_num, to_dialog):
+        self.refresh_ui(mod_num)
+        if to_dialog == 'print':
+            self.Dis[0].mainDialog.hide()
+            self.Dis[1].mainDialog.show()
+        elif to_dialog == 'extend':
+            self.Dis[0].mainDialog.hide()
+            self.Dis[2].mainDialog.show()
+            self.extend_file()
+        else:
+            self.Dis[0].mainDialog.show()
+            self.Dis[1].mainDialog.hide()
+            self.Dis[2].mainDialog.hide()  
+
+    def set_listfocus(self, index):
+        self.Dis[2].listView.setFocus()
+        self.Dis[2].listView.setCurrentIndex(self.Dis[2].listView.model().index(index,0))
+        select_item = self.Dis[2].itemList[index]
+        print(select_item)
     
     def print_title(self):
         # print("음성프린트 기능을 클릭 하셨습니다.")
-        self.Dis[1].workTable.setText(workTextdic['start'])
+        self.Dis[1].workTable.setText(work_textdic['start'])
         while 1:
-            self.Dis[1].workTable.append(workTextdic['readytitle'])
+            self.Dis[1].workTable.append(work_textdic['readytitle'])
             try:
                 title_word = stt.trans()
             except:
                 print("bad auth JSON")
-                self.Dis[1].workTable.append(workTextdic['fatal'])
+                self.Dis[1].workTable.append(work_textdic['fatal'])
                 break
 
             if not isinstance(title_word,str):
-                self.Dis[1].workTable.append(workTextdic['overtime'])
+                self.Dis[1].workTable.append(work_textdic['overtime'])
                 continue
             self.Dis[1].workTable.append(title_word)
-            self.Dis[1].workTable.append(workTextdic['isright'])
+            self.Dis[1].workTable.append(work_textdic['isright'])
 
             # if os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
             if os.path.isfile(title_word+'.txt'):
-                self.Dis[1].workTable.append(workTextdic['duplicate'])
+                self.Dis[1].workTable.append(work_textdic['duplicate'])
                 title_word = None
                 continue
             else:
                 return title_word
 
     def print_body(self):
-            self.Dis[1].workTable.append(workTextdic['readybody'])
+            self.Dis[1].workTable.append(work_textdic['readybody'])
             while 1:
                 typing_text = stt.trans()
 
                 if not isinstance(typing_text,str):
-                    self.Dis[1].workTable.append(workTextdic['overtime'])
+                    self.Dis[1].workTable.append(work_textdic['overtime'])
                     continue
                 self.Dis[1].workTable.append(typing_text)
-                self.Dis[1].workTable.append(workTextdic['isright'])
+                self.Dis[1].workTable.append(work_textdic['isright'])
                 return typing_text
 
     def commit_text(self, title_word, typing_text):
         # with open('/mnt/usb'+title_word+'.txt','w') as fileh: # 라즈베리파이
         with open(title_word+'.txt','a') as fileh:
             fileh.write(typing_text+'\n')  
-        self.Dis[1].workTable.append(workTextdic['newline'])
+        self.Dis[1].workTable.append(work_textdic['newline'])
 
     def print_record(self):
         print("녹음프린트 기능을 클릭 하셨습니다.")
