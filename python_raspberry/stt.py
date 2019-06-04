@@ -3,6 +3,7 @@ from __future__ import division
 import re
 import sys
 import os
+import io
 
 from google.cloud import speech
 from google.cloud.speech import enums
@@ -161,6 +162,32 @@ def trans(credential_path):
         ## listen_print_loop(responses)
         strtext = listen_print_loop(responses)
         return strtext
+
+def record(file, credential_path):
+    """Audio files that can be entered are only flac"""
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = credential_path
+    language_code = 'ko-KR'
+    
+    client = speech.SpeechClient()
+
+    with io.open(file, 'rb') as h:
+        context = h.read()
+    
+    audio = types.RecognitionAudio(context=context)
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=RATE,
+        language_code=language_code)
+    
+    response = client.recognize(config, audio)
+    
+    result_text = list() # TODO: need a more ideas...
+    for k in response.result:
+        alternatives = k.alternatives
+        for alternative in alternatives:
+            result_text.append(alternative.transcript)
+    
+    return result_text
 
 if __name__ == '__main__':
     trans()
