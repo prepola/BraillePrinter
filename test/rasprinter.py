@@ -7,6 +7,7 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from python_raspberry import stt
 from PyQt5 import QtWidgets, Qt
 import display
+# import docxread
 
 # 1: print_ui
 # 2: recording_file_ui
@@ -47,10 +48,6 @@ work_textdic = {
 }
 
 class Ui_Dialog(object):
-    mod_num = int()
-    dex = 0
-    title = None
-    typing_text = None
 
     def __init__(self):
         self.dis = [
@@ -65,13 +62,23 @@ class Ui_Dialog(object):
             self.dis[i].mainBtnlist[2].clicked.connect(self.btn_3)
             self.dis[i].mainBtnlist[3].clicked.connect(self.btn_back)
 
-        self.change_dialog(self.mod_num, None)
+        self.field_init()
+        self.change_dialog(self.mod_num, None)   
     
+    def field_init(self):
+        self.mod_num = int()
+        self.from_dialog = int()
+        self.dex = 0
+        self.title = None
+        self.typing_text = None
+        self.select_item = None
+        self.dis[1].workTable.setText('')
+
     def btn_1(self):
         if self.mod_num not in mod_list:
             self.mod_num = 1
             self.change_dialog(self.mod_num, None)
-        elif (self.dis[0].mainBtnlist[0].text() == gui_textlist[1][1]):
+        elif (self.mod_num == 1):
             self.mod_num = 5
             self.change_dialog(self.mod_num, 'print')
         elif (self.mod_num == 2):
@@ -108,6 +115,12 @@ class Ui_Dialog(object):
             self.noone()
         elif (self.mod_num == 4):
             self.others()
+        elif (self.mod_num == 9):
+            if self.from_dialog == 1:
+                print(self.select_item, '을 전달합니다.')
+                self.mod_num = 6
+                self.change_dialog(self.mod_num, 'print')
+                self.title = self.print_title()
 
     def btn_3(self):
         if self.mod_num not in mod_list:
@@ -115,6 +128,7 @@ class Ui_Dialog(object):
             self.change_dialog(self.mod_num, None)
             # self.print_record()
         elif (self.mod_num in [1, 2, 3]):
+            self.from_dialog = self.mod_num
             self.mod_num = 9
             self.change_dialog(self.mod_num, 'extend')
             self.set_listfocus(self.dex)
@@ -127,94 +141,96 @@ class Ui_Dialog(object):
 
     def btn_back(self):
         if self.mod_num in mod_list:
-            self.dis[1].workTable.setText('')
-            self.dex = 0
-            self.title = None
-            self.typing_text = None
-            self.mod_num = 0
+            self.field_init()
             self.change_dialog(self.mod_num, None)             
             print("뒤로")
     
     def change_dialog(self, mod_num, to_dialog):
-        for i in range(3):
-            self.dis[i].refresh_ui(gui_textlist[mod_num])
         if to_dialog == 'print':
             self.dis[0].mainDialog.hide()
             self.dis[1].mainDialog.show()
+            self.dis[1].refresh_ui(gui_textlist[mod_num],mod_num)
         elif to_dialog == 'extend':
             self.dis[0].mainDialog.hide()
             self.dis[2].mainDialog.show()
-            self.extend_file()
+            self.dis[2].refresh_ui(gui_textlist[mod_num],mod_num)
         else:
             self.dis[0].mainDialog.show()
             self.dis[1].mainDialog.hide()
-            self.dis[2].mainDialog.hide()  
+            self.dis[2].mainDialog.hide()
+            self.dis[0].refresh_ui(gui_textlist[mod_num],mod_num) 
 
     def set_listfocus(self, index):
         self.dis[2].listView.setFocus()
         self.dis[2].listView.setCurrentIndex(self.dis[2].listView.model().index(index,0))
-        select_item = self.dis[2].itemList[index]
-        print(select_item)
-    
+        self.select_item = self.dis[2].itemList[index]
+        print(self.select_item)
+
     def print_title(self):
-        # print("음성프린트 기능을 클릭 하셨습니다.")
+        print("음성프린트 기능을 클릭 하셨습니다.")
         self.dis[1].workTable.setText(work_textdic['start'])
         while 1:
-            self.dis[1].workTable.append(work_textdic['readytitle'])
+            self.dis[1].set_infotext(work_textdic['readytitle'])
+            if isinstance(self.select_item,str):
+                self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
+                return self.select_item
             try:
                 title_word = stt.trans(credential_path)
             except:
                 print("bad auth JSON")
-                self.dis[1].workTable.append(work_textdic['fatal'])
+                self.dis[1].set_infotext(work_textdic['fatal'])
                 break
 
             if not isinstance(title_word,str):
-                self.dis[1].workTable.append(work_textdic['overtime'])
+                self.dis[1].set_infotext(work_textdic['overtime'])
                 continue
-            self.dis[1].workTable.append(title_word)
-            self.dis[1].workTable.append(work_textdic['isright'])
+            self.dis[1].set_infotext(title_word)
+            self.dis[1].set_infotext(work_textdic['isright'])
 
             # if os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
             if os.path.isfile(title_word+'.txt'):
-                self.dis[1].workTable.append(work_textdic['duplicate'])
+                self.dis[1].set_infotext(work_textdic['duplicate'])
                 title_word = None
                 continue
             else:
+                self.dis[1].set_infotext('파일 '+title_word+' 로 시작합니다.')
                 return title_word
 
     def print_body(self):
-            self.dis[1].workTable.append(work_textdic['readybody'])
+            self.dis[1].set_infotext(work_textdic['readybody'])
             while 1:
-                typing_text = stt.trans(credential_path)
+                try:
+                    typing_text = stt.trans(credential_path)
+                except:
+                    print("bad auth JSON")
+                    self.dis[1].set_infotext(work_textdic['fatal'])
+                    break
 
                 if not isinstance(typing_text,str):
-                    self.dis[1].workTable.append(work_textdic['overtime'])
+                    self.dis[1].set_infotext(work_textdic['overtime'])
                     continue
-                self.dis[1].workTable.append(typing_text)
-                self.dis[1].workTable.append(work_textdic['isright'])
+                self.dis[1].set_infotext(typing_text)
+                self.dis[1].set_infotext(work_textdic['isright'])
                 return typing_text
+
+    def print_record(self, record_name):
+        # print("녹음프린트 기능을 클릭 하셨습니다.")
+        self.dis[1].set_infotext(work_textdic['readyrecord'])
+
+        record_text = stt.record(record_name, credential_path)
+        return record_text
 
     def commit_text(self, title_word, input_text):
         # with open('/mnt/usb'+title_word+'.txt','w') as fileh: # 라즈베리파이
         with open(title_word+'.txt','a') as fileh:
             fileh.write(input_text+'\n')  
-        self.dis[1].workTable.append(work_textdic['newline'])
-
-    def print_record(self, record_name):
-        # print("녹음프린트 기능을 클릭 하셨습니다.")
-        self.dis[1].workTable.append(work_textdic['readyrecord'])
-
-        record_text = stt.record(record_name, credential_path)
-        return record_text
+        self.dis[1].set_infotext(work_textdic['newline'])
 
     def print_document(self):
         print("문서프린트 기능을 클릭 하셨습니다.")
     
     def others(self):
         print("기타 기능을 클릭 하셨습니다.")
-    
-    def extend_file(self):
-        print("외부파일 기능을 클릭 하셨습니다.")
 
     def noone(self):
         return None
