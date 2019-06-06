@@ -64,11 +64,17 @@ class Ui_Dialog(object):
         QtCore.QMetaObject.connectSlotsByName(self.mainDialog)
         self.mainDialog.show()
     
-    def refresh_ui(self, text_list):
+    def refresh_ui(self, text_list, ints):
         for i in range(5):
             if i == 0 : self.mainInfo.setText(text_list[i])          
             else : self.mainBtnlist[i-1].setText(text_list[i])
-        print(text_list[0])
+        print(ints, text_list[0])
+    
+    def set_infotext(self, data):
+        if len(self.workTable.toPlainText()) < 1 :
+            self.workTable.setText(data)
+        else:
+            self.workTable.append(data)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
