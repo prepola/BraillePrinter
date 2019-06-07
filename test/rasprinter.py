@@ -3,10 +3,14 @@
 import sys
 import io
 import os
+import threading
+import subprocess
+from PyQt5 import QtWidgets, Qt
+
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from python_raspberry import stt
-from PyQt5 import QtWidgets, Qt
 import display
+import tts
 # import docxread
 
 # 1: print_ui
@@ -21,7 +25,7 @@ import display
 # others: main_ui
 mod_list = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 fontsize_1 = 30
-credential_path = str() # 구글 클라우드에서 프로젝트 생성후 JSON파일의 경로를 지정
+credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json' # 구글 클라우드에서 프로젝트 생성후 JSON파일의 경로를 지정
 
 gui_textlist = [
         ["메인 화면", "음성인식 프린트\n시작", "녹음된 음성파일을 이용하여\n프린트", "문서 파일을 이용하여\n프린트", "--기타기능--"],
@@ -168,7 +172,9 @@ class Ui_Dialog(object):
 
     def print_title(self):
         print("음성프린트 기능을 클릭 하셨습니다.")
-        self.dis[1].workTable.setText(work_textdic['start'])
+        self.dis[1].set_infotext(work_textdic['start'])
+        threading.Thread(target=tts.run_voice, args=(work_textdic['start'],)).start()
+        # tts.run_voice(work_textdic['start'])
         while 1:
             self.dis[1].set_infotext(work_textdic['readytitle'])
             if isinstance(self.select_item,str):
@@ -180,8 +186,7 @@ class Ui_Dialog(object):
                 print("bad auth JSON")
                 self.dis[1].set_infotext(work_textdic['fatal'])
                 break
-
-            if not isinstance(title_word,str):
+            if not isinstance(title_word,str) | (len(title_word) < 1):
                 self.dis[1].set_infotext(work_textdic['overtime'])
                 continue
             self.dis[1].set_infotext(title_word)
@@ -222,7 +227,9 @@ class Ui_Dialog(object):
 
     def commit_text(self, title_word, input_text):
         # with open('/mnt/usb'+title_word+'.txt','w') as fileh: # 라즈베리파이
-        with open(title_word+'.txt','a') as fileh:
+        if title_word[-4:] != '.txt':
+            title_word = title_word+'.txt'
+        with open(title_word,'a') as fileh:
             fileh.write(input_text+'\n')  
         self.dis[1].set_infotext(work_textdic['newline'])
 
@@ -234,6 +241,7 @@ class Ui_Dialog(object):
 
     def noone(self):
         return None
+        
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
