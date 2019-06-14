@@ -6,6 +6,7 @@ import os
 import threading
 import subprocess
 from PyQt5 import QtWidgets, Qt
+import time
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from python_raspberry import stt
@@ -41,8 +42,8 @@ gui_textlist = [
 ]
 work_textdic = {
         'duplicate':'중복되는 파일이 존재합니다.\n다시 시도해주십시요.',
-        'start':'안녕하세요\n기록을 시작하기전에 제목을 입력해야 합니다.\n',
-        'readytitle':'준비가 되었다면 좌측 상단 버튼을 눌러 제목을 입력해주세요.',
+        'start':'안녕하세요\n',
+        'readytitle':'기록을 시작하기전에 제목을 입력해야 합니다.\n준비가 되었다면 좌측 상단 버튼을 눌러 제목을 입력해주세요.',
         'readybody':'좌측 상단 버튼을 눌러 기록을 시작합니다.',
         'readyrecord':'해당파일로 입력을 시작합니다.',
         'fatal':'비정상 종료됨\n입력종료 버튼을 눌러주세요.',
@@ -93,7 +94,8 @@ class Ui_Dialog(object):
             self.others()
         elif (self.mod_num == 5):
             self.mod_num = 6
-            self.change_dialog(self.mod_num, 'print')
+            # self.change_dialog(self.mod_num, 'print')
+            self.menu_guide(work_textdic['start'])
             self.title = self.print_title()
         elif (self.mod_num == 6):
             self.mod_num = 7
@@ -170,11 +172,12 @@ class Ui_Dialog(object):
         self.select_item = self.dis[2].itemList[index]
         print(self.select_item)
 
+    def menu_guide(self, guide):
+        self.dis[1].set_infotext(guide)
+        threading.Thread(target=tts.run_voice, args=(guide,)).start()
+
     def print_title(self):
         print("음성프린트 기능을 클릭 하셨습니다.")
-        self.dis[1].set_infotext(work_textdic['start'])
-        threading.Thread(target=tts.run_voice, args=(work_textdic['start'],)).start()
-        # tts.run_voice(work_textdic['start'])
         while 1:
             self.dis[1].set_infotext(work_textdic['readytitle'])
             if isinstance(self.select_item,str):
