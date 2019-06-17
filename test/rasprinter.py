@@ -52,6 +52,7 @@ work_textdic = {
         'commit':'입력되었습니다\n다음줄로 이동합니다.'
 }
 
+sd = 0
 class Ui_Dialog(object):
 
     def __init__(self):
@@ -77,11 +78,12 @@ class Ui_Dialog(object):
         self.title_state = bool()
         self.body_state = bool()
         self.title = None
+        self.body = None
         self.typing_text = None
         self.select_item = None
         self.dis[1].workTable.setText('')
 
-        self.voice = None
+        self.play_voice = None
 
     def btn_1(self):
         if self.mod_num not in mod_list:
@@ -103,20 +105,20 @@ class Ui_Dialog(object):
             self.change_dialog(self.mod_num, 'print')
             self.menu_guide(work_textdic['readytitle'])
             self.title_state = True
-        elif self.title_state:
+        elif self.title_state & (self.title is None):
             self.title = self.print_title()
-            self.menu_guide(self.title)
-            self.menu_guide(work_textdic['isright'])
+            self.menu_guide(self.title + '\n' + work_textdic['isright'])
         elif (self.body_state is not True):
             self.menu_guide(work_textdic['readybody'])
             self.body_state = True
-        elif self.body_state:
+        elif self.body_state & (self.body is None):
             self.body = self.print_body()
             self.menu_guide(self.body)
-            self.menu_guide(work_textdic['isright'])
+            self.menu_guide(self.body + '\n' + work_textdic['isright'])
         elif (self.title_state & self.body_state):
             self.commit_text(self.title, self.body)
             self.menu_guide(work_textdic['commit'])
+            self.body = None
         # elif (self.mod_num == 6):
         #     self.mod_num = 7
         #     self.body = self.print_body()
@@ -193,17 +195,18 @@ class Ui_Dialog(object):
         print(self.select_item)
 
     def menu_guide(self, guide):
-        if self.voice is None:
-            print('스레드 없음')
-        elif self.voice.isAlive():
-            self.voice.close()
-
+        if self.play_voice is not None:
+            self.play_voice.stop()
+            self.play_voice = None
         self.dis[1].set_infotext(guide)
+        tts.make_voice(guide)
+        self.play_voice = tts.run_voice()
+        self.play_voice.start()
         # self.guide_voice = threading.Thread(target=tts.run_voice, args=(guide,))
         # self.guide_voice.start()
-        self.voice = Thread(tts.run_voice, (guide,))
-        self.voice.daemon = True
-        self.voice.start()
+        # self.voice = Thread(tts, (guide,))
+        # self.voice.daemon = True
+        # self.voice.start()
 
     def print_title(self):
         print("음성프린트 기능을 클릭 하셨습니다.")
@@ -252,7 +255,6 @@ class Ui_Dialog(object):
 
     def print_record(self, record_name):
         # print("녹음프린트 기능을 클릭 하셨습니다.")
-        self.dis[1].set_infotext(work_textdic['readyrecord'])
 
         record_text = stt.record(record_name, credential_path)
         return record_text
@@ -263,7 +265,6 @@ class Ui_Dialog(object):
             title_word = title_word+'.txt'
         with open(title_word,'a') as fileh:
             fileh.write(input_text+'\n')  
-        self.dis[1].set_infotext(work_textdic['newline'])
 
     def print_document(self):
         print("문서프린트 기능을 클릭 하셨습니다.")
@@ -277,18 +278,14 @@ class Ui_Dialog(object):
 class Thread(threading.Thread):
     def __init__(self, func, args, name=''):
         threading.Thread.__init__(self,name=name)
-        self._stop = threading.Event()
         self.func = func
         self.args = args
 
-    def stop(self):
-        self._stop.set()
-
-    def stopped(self):
-        return self._stop.isSet()
-
     def run (self):
-        self.func(*self.args)
+        self.func.run_voice(*self.args)
+
+    def stop(self):
+        self.func.stop()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
