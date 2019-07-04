@@ -4,7 +4,9 @@
 # Overview
 음성 인식을 이용하여 점자로 변환하는 프린터입니다.
 
-음성 인식 및 합성, 텍스트 처리는 라즈베리파이, 점자 변환, 모터 제어는 STM32F4가 담당합니다.
+음성 인식 및 합성, 텍스트 처리는 라즈베리파이가 담당하고
+
+점자 변환, 모터 제어는 STM32F4가 담당합니다.
 
 # CHANGELOG
 0.1
@@ -12,12 +14,13 @@
 - 프로젝트 생성
 
 ## Developed By
-JUNHO JANG - @prepola on GitHub, jkh6912@gmail.com
+GUNHO JANG - @prepola on GitHub, jkh6912@gmail.com
+MINWOO KANG - @petterdu on GitHub, petterdu94@gmail.com
 
 ### License
 
 ```
-Copyright (c) 2019 JUNHO JANG,
+Copyright (c) 2019 JUNHO JANG, MINWOO KANG
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
