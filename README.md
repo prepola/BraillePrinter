@@ -15,6 +15,7 @@
 
 ## Developed By
 GUNHO JANG - @prepola on GitHub, jkh6912@gmail.com
+
 MINWOO KANG - @petterdu on GitHub, petterdu94@gmail.com
 
 ### License
