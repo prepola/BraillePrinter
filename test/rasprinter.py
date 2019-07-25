@@ -4,7 +4,6 @@ import sys
 import io
 import os
 import threading
-import subprocess
 from PyQt5 import QtWidgets, Qt
 import time
 
@@ -29,6 +28,7 @@ fontsize_1 = 30
 credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json' # 구글 클라우드에서 프로젝트 생성후 JSON파일의 경로를 지정
 
 gui_textlist = [
+        ["프로그램 재시작 필요", "-", "-", "-", "-"],
         ["메인 화면", "음성인식 프린트\n시작", "녹음된 음성파일을 이용하여\n프린트", "문서 파일을 이용하여\n프린트", "--기타기능--"],
         ["프린트", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
         ["녹음파일로 기록", "새로 기록", "음성 재안내", "기존파일에 이어서 기록", "뒤로가기"],
@@ -52,7 +52,6 @@ work_textdic = {
         'commit':'입력되었습니다\n다음줄로 이동합니다.'
 }
 
-sd = 0
 class Ui_Dialog(object):
 
     def __init__(self):
@@ -274,18 +273,6 @@ class Ui_Dialog(object):
 
     def noone(self):
         return None
-
-class Thread(threading.Thread):
-    def __init__(self, func, args, name=''):
-        threading.Thread.__init__(self,name=name)
-        self.func = func
-        self.args = args
-
-    def run (self):
-        self.func.run_voice(*self.args)
-
-    def stop(self):
-        self.func.stop()
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
