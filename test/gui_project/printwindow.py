@@ -5,8 +5,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from display import generate_display
 
 class Ui_Dialog(generate_display):
-    def __init__(self, mode, fontsize):
-        return super().__init__(mode, fontsize)
+    def __init__(self, fontsize):
+        return super().__init__(fontsize)
 
     def create_worktable(self):
         self.workTable = QtWidgets.QTextBrowser(self.mainDialog)

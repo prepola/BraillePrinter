@@ -3,9 +3,8 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
 class generate_display(object):
-    def __init__(self, mode, fontsize):
+    def __init__(self, fontsize):
         self.fontsize = fontsize
-        self.mode = mode
 
         self.mainDialog = QtWidgets.QDialog()
         self.mainDialog.resize(1024, 600)
@@ -59,7 +58,7 @@ class generate_display(object):
 
 def main():
     # app = QtWidgets.QApplication(sys.argv)
-    # ui = generate_display("extend",30)
+    # ui = generate_display(30)
     # ui.set_buttonsize()
     # ui.create_listview()
     # ui.set_layout()

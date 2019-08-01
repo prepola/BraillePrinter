@@ -3,7 +3,7 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
 from display import generate_display
-import printwindow as print_w
+import printwindow as pri_w
 
 #ㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 #| btn_1 | btn_2 |
@@ -27,19 +27,24 @@ gui_textlist = [
 ]
 
 class Ui_Dialog(generate_display):
-    def __init__(self, mode, fontsize):
-        return super().__init__(mode, fontsize)
-    
+    def __init__(self, fontsize):
+        super().__init__(fontsize)
+        self.set_buttonsize()
+        self.set_layout()
+        self.refresh_ui(gui_textlist[1])
+        self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
+
     def set_buttonsize(self) :
-        for i in range(4):
+        for i in range(4) :
             self.mainBtnlist[i].setMinimumSize(QtCore.QSize(300, 175))
+            
 
     def set_layout(self):
         self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
         self.mainLayout_4.addLayout(self.mainLayout, 1, 0, 1, 1)
 
-    # def set_mode(self, mode):
-    #     self.mode = mode
+    def set_mode(self, mode):
+        self.mode = mode
 
     def hied_dialog(self):
         self.mainDialog.hide()
@@ -53,14 +58,14 @@ class Ui_Dialog(generate_display):
         return mode_list.get(self.mode, mode_list['error'])
     
     def show_dialog(self):
-        self.mainDialog.show()
+        return self.mainDialog.show()
 
     def btn_1(self) :
         print('버튼1')
         mode_list = {
             'main' : self.refresh_ui(gui_textlist[2]),
-            'print_main' : self.hied_dialog,
-            'record_main' : self.hied_dialog,
+            'print_main' : self.refresh_ui(gui_textlist[3]),
+            'record_main' : self.refresh_ui(gui_textlist[4]),
             'doc_main' : self.hied_dialog,
             'news_main' : self.hied_dialog,
             'error' : self.refresh_ui
@@ -78,11 +83,12 @@ class Ui_Dialog(generate_display):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    ui = Ui_Dialog('main', 30)
-    ui.set_buttonsize()
-    ui.set_layout()
-    ui.refresh_ui(gui_textlist[1])
-    ui.set_clickevent(ui.btn_1, ui.btn_2, ui.btn_3, ui.btn_4)
+    ui = Ui_Dialog(30)
+    ui.set_mode('main')
+    # ui.set_buttonsize()
+    # ui.set_layout()
+    # ui.refresh_ui(gui_textlist[1])
+    # ui.set_clickevent(ui.btn_1, ui.btn_2, ui.btn_3, ui.btn_4)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":
