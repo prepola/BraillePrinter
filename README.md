@@ -1,5 +1,5 @@
-# BraillePrinter with Google Assistant
-2019년 한이음 공모전에 출품할 프로젝트인 구글 어시스턴트를 이용한 점자프린터 입니다.
+# BraillePrinter with Cloud Speech-to-Text API
+2019년 한이음 공모전에 출품할 프로젝트인 Cloud Speech-to-Text API를 이용한 점자프린터 입니다.
 
 # Overview
 음성 인식을 이용하여 점자로 변환하는 프린터입니다.
