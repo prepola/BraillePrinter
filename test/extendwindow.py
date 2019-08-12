@@ -4,12 +4,18 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
 from display import generate_display
 
+gui_textlist = {
+        'error':["프로그램 재시작 필요", "-", "-", "-", "-"],
+        'extend':["파일선택", "위", '음성 재안내', "아래", "취소"]
+}
+
 class Ui_Dialog(generate_display):
     def __init__(self, mode, fontsize):
         super().__init__(mode, fontsize)
         self.set_buttonsize()
         self.create_listview()
         self.set_layout()
+        self.refresh_ui(gui_textlist['extend'])
 
     def create_listview(self):
         self.itemList = os.listdir('C://')
@@ -32,7 +38,7 @@ class Ui_Dialog(generate_display):
 
 def main():
     app = QtWidgets.QApplication(sys.argv)
-    ui = Ui_Dialog(30)
+    ui = Ui_Dialog('extend', 30)
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

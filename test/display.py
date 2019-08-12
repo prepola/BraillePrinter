@@ -1,10 +1,12 @@
 import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
+import json
 
-font_color = '#ffffff'
-back_color = ['#0091EA','#00B0FF','#40C4FF','#80D8FF']
-#['#00BFA5','#1DE9B6','#64FFDA','#A7FFEB']
+color_code = 'lightblue'
+color_data = json.load(open('colordata.json', 'r'))
+font_color = '#000000' if color_code in ['cyanA', 'tealA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
+back_color = color_data.get(color_code, color_data['gray'])
 
 class generate_display(QtWidgets.QDialog):
     def __init__(self, mode, fontsize, parent=None):
@@ -81,7 +83,6 @@ class generate_display(QtWidgets.QDialog):
             if i == 0 : self.mainInfo.setText(text_list[i])          
             else : self.mainBtn[i-1].setText(text_list[i])
     
-
 def main():
     app = QtWidgets.QApplication(sys.argv)
     ui = generate_display(30)

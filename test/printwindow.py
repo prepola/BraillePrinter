@@ -24,7 +24,9 @@ work_textdic = {
         'fatal':'비정상 종료됨\n입력종료 버튼을 눌러주세요.',
         'overtime':'입력 시간이 초과하였거나 입력에 실패하였습니다.\n다시 시도해주십시요.',
         'isright':'다음 내용이 맞습니까?',
-        'commit':'입력되었습니다\n다음줄로 이동합니다.'
+        'commit':'입력되었습니다\n다음줄로 이동합니다.',
+        'end_ans':'현재 진행하던 내용이 저장되지 않습니다. 종료하시려면 버튼을 한번더 입력해 주세요',
+        '':''
 }
 
 credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
@@ -34,10 +36,12 @@ class Ui_Dialog(generate_display):
         super().__init__(mode, fontsize)
 
         self.play_voice = None
+        self.end_flag = False
 
         self.create_worktable()
         self.set_buttonsize()
         self.set_layout()
+        self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
         self.refresh_ui(gui_textlist[self.get_mode('start')])
 
     def create_worktable(self):
@@ -56,8 +60,8 @@ class Ui_Dialog(generate_display):
         self.mainLayout_4.addLayout(self.mainLayout, 2, 0, 1, 1)
         self.mainLayout_3.addWidget(self.workTable, 0, 0, 1, 1)
 
-    def get_mode(self, text=None):
-        if text is not None:
+    def get_mode(self, text = ''):
+        if text != '':
             if self.play_voice is not None:
                 self.play_voice.stop()
                 self.play_voice = None
@@ -147,9 +151,13 @@ class Ui_Dialog(generate_display):
             self.refresh_ui(gui_textlist[self.get_mode()])
 
     def btn_4(self) :
-        if self.get_mode() != 'print':
+        if not self.end_flag:
+            self.get_mode('end_ans')
+            self.end_flag = True
+        elif self.end_flag:
             self.set_mode('main')
-            print('main으로 재전환')
+            self.get_mode('')
+            self.mainDialog.close()
     
 def main():
     app = QtWidgets.QApplication(sys.argv)
