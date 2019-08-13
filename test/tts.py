@@ -27,8 +27,8 @@ import threading
 
 chunk = 1024
 
-class make_voice(object):
-    def __init__(self, text):
+class run_voice(threading.Thread):
+    def __init__(self, text, name=''):
         # [START tts_quickstart]
         """Synthesizes speech from the input string of text or ssml.
         Note: ssml must be well-formed according to:
@@ -61,8 +61,6 @@ class make_voice(object):
         # Write the response to the output file.
             out.write(response.audio_content)
 
-class run_voice(threading.Thread):
-    def __init__(self, name=''):
         threading.Thread.__init__(self,name=name)
         self.stop_event = threading.Event()
 
@@ -94,7 +92,5 @@ class run_voice(threading.Thread):
         self.stop_event.set()
         # self.join()
 
-
 if __name__ == '__main__':
-    make_voice('테스트')
-    run_voice()
+    run_voice('테스트 음성입니다.').start()
