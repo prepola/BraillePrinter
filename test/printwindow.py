@@ -10,9 +10,10 @@ import tts
 gui_textlist = {
         'error':["프로그램 재시작 필요", "-", "-", "-", "-"],
         'print':["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"],
-        'print_title':["입력 중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
+        'print_title':["음성프린트", "입력 시작", "음성 재안내", "정정 및 수정", "입력 종료"],
         'print_body':["입력 중", "이 내용으로 기록", "음성 재안내", "재입력", "입력 종료"],
-        'print_input':["입력 중", "입력 중", "입력 중", "입력 중", "입력 중"]
+        'print_input':["입력 중", "입력 중", "입력 중", "입력 중", "입력 중"],
+        'isright':["입력 검토", "예", "음성 재안내", "재입력", "입력 종료"]
 }
 
 work_textdic = {
@@ -21,11 +22,11 @@ work_textdic = {
         'readytitle':'기록을 시작하기전에 제목을 입력해야 합니다.\n준비가 되었다면 좌측 상단 버튼을 눌러 제목을 입력해주세요.',
         'readybody':'본문 입력을 시작합니다.\n좌측 상단 버튼을 눌러 기록을 시작해 주십시오',
         'readyrecord':'해당파일로 입력을 시작합니다.',
-        'fatal':'비정상 종료됨\n입력종료 버튼을 눌러주세요.',
+        'fatal':'음성인식을 실행할 수 없습니다.\ncredential path 및 Google Cloud Platform console을 확인해주세요.\n입력종료 버튼을 누르면 프린트과정이 종료됩니다.',
         'overtime':'입력 시간이 초과하였거나 입력에 실패하였습니다.\n다시 시도해주십시요.',
         'isright':'다음 내용이 맞습니까?',
         'commit':'입력되었습니다\n다음줄로 이동합니다.',
-        'end_ans':'현재 진행하던 내용이 저장되지 않습니다. 종료하시려면 버튼을 한번더 입력해 주세요',
+        'end_ans':'현재 진행하던 내용이 저장되지 않습니다. 종료하시려면 버튼을 한번 더 입력해 주세요',
         '':''
 }
 
@@ -37,12 +38,14 @@ class Ui_Dialog(generate_display):
 
         self.play_voice = None
         self.end_flag = False
+        self.current_voice = str()
+        self.input_title = str()
 
         self.create_worktable()
         self.set_buttonsize()
         self.set_layout()
         self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
-        self.refresh_ui(gui_textlist[self.get_mode('start')])
+        self.set_mode('print', 'start')
 
     def create_worktable(self):
         self.workTable = QtWidgets.QTextBrowser(self.mainDialog)
@@ -60,45 +63,47 @@ class Ui_Dialog(generate_display):
         self.mainLayout_4.addLayout(self.mainLayout, 2, 0, 1, 1)
         self.mainLayout_3.addWidget(self.workTable, 0, 0, 1, 1)
 
-    def get_mode(self, text = ''):
+    def set_mode(self, mode, text = ''):
+        self.current_voice = text
         if text != '':
-            if self.play_voice is not None:
-                self.play_voice.stop()
-                self.play_voice = None
-            self.workTable.append(work_textdic[text])
-            tts.make_voice(work_textdic[text])
-            self.play_voice = tts.run_voice()
-            self.play_voice.start()
-        return super().get_mode()
+            self.add_log(text)
+            self.make_voice(text)
+        self.refresh_ui(gui_textlist.get(mode, gui_textlist['error']))
+        return super().set_mode(mode)
+
+    def make_voice(self, text):
+        if self.play_voice is not None:
+            self.play_voice.stop()
+            self.play_voice = None
+        if text in work_textdic:
+            self.play_voice = tts.run_voice(work_textdic.get(text, work_textdic['']))
+        else:
+            self.play_voice = tts.run_voice(text)
+        return self.play_voice.start()
+
+    def add_log(self, text):
+        return self.workTable.append(work_textdic.get(text, work_textdic['']))
 
 # TODO: 수정해야 되는 부분
 
     def print_title(self):
         print("음성프린트 기능을 클릭 하셨습니다.")
         while 1:
-            self.dis[1].set_infotext(work_textdic['readytitle'])
-            if isinstance(self.select_item,str):
-                self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
-                return self.select_item
+            # if isinstance(self.select_item,str):
+            #     self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
+            #     return self.select_item
             try:
                 title_word = stt.trans(credential_path)
             except:
                 print("bad auth JSON")
-                self.dis[1].set_infotext(work_textdic['fatal'])
-                break
-            if not isinstance(title_word,str) | (len(title_word) < 1):
-                self.dis[1].set_infotext(work_textdic['overtime'])
-                continue
-            self.dis[1].set_infotext(title_word)
-            self.dis[1].set_infotext(work_textdic['isright'])
+                return 'fatal'
 
-            # if os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
-            if os.path.isfile(title_word+'.txt'):
-                self.dis[1].set_infotext(work_textdic['duplicate'])
-                title_word = None
-                continue
+            if not isinstance(title_word,str) | (len(title_word) < 1):
+                return 'overtime'
+            # elif os.path.isfile('/mnt/usb'+title_word+'.txt'): # 라즈베리파이
+            elif os.path.isfile(title_word+'.txt'):
+                return 'duplicate'
             else:
-                self.dis[1].set_infotext('파일 '+title_word+' 로 시작합니다.')
                 return title_word
 
     def print_body(self):
@@ -133,30 +138,31 @@ class Ui_Dialog(generate_display):
 # TODO: 여기까지
 
     def btn_1(self) :
-        if self.get_mode('readytitle') == 'print':
-            self.set_mode('print_title')
-            self.refresh_ui(gui_textlist[self.get_mode()])
+        if self.get_mode() == 'print':
+            self.set_mode('print_title', 'readytitle')
         elif self.get_mode() == 'print_title':
-            self.set_mode('print_input')
-            self.refresh_ui(gui_textlist[self.get_mode()])
+            self.refresh_ui(gui_textlist.get('print_input', gui_textlist['error']))
+            input_title = self.print_title()
+            if input_title in gui_textlist:
+                self.set_mode(self.get_mode(), input_title)
+            else:
+                self.set_mode('isright', 'isright')
+                self.add_log(input_title)
+                self.make_voice(input_title)
 
     def btn_2(self) :
-        if self.get_mode() == 'print':
-            self.set_mode('record_main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
+        self.make_voice(self.current_voice)
 
     def btn_3(self) :
         if self.get_mode() == 'print':
             self.set_mode('doc_main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
 
     def btn_4(self) :
         if not self.end_flag:
-            self.get_mode('end_ans')
+            self.set_mode(self.mode, 'end_ans')
             self.end_flag = True
         elif self.end_flag:
             self.set_mode('main')
-            self.get_mode('')
             self.mainDialog.close()
     
 def main():
