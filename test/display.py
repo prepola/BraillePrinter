@@ -3,9 +3,9 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import json
 
-color_code = 'lightblue'
+color_code = 'tealA'
 color_data = json.load(open('colordata.json', 'r'))
-font_color = '#000000' if color_code in ['cyanA', 'tealA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
+font_color = '#000000' if color_code in ['cyanA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
 back_color = color_data.get(color_code, color_data['gray'])
 
 class generate_display(QtWidgets.QDialog):
@@ -60,10 +60,8 @@ class generate_display(QtWidgets.QDialog):
         self.mainDialog.show()        
 
     def set_clickevent(self, *args):
-        i = 0
-        for func in args:
-            self.mainBtn[i].clicked.connect(func)
-            i = i + 1
+        for i in range(4):
+            self.mainBtn[i].clicked.connect(args[i])
 
     def get_mode(self):
         return self.mode

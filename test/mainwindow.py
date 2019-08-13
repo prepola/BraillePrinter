@@ -36,9 +36,6 @@ class Ui_Dialog(generate_display):
     def set_layout(self):
         self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
         self.mainLayout_4.addLayout(self.mainLayout, 1, 0, 1, 1)
-    
-    def show_dialog(self):
-        return self.mainDialog.show()
 
     def btn_1(self) :
         if self.get_mode() == 'main':

@@ -6,7 +6,7 @@ from display import generate_display
 
 gui_textlist = {
         'error':["프로그램 재시작 필요", "-", "-", "-", "-"],
-        'extend':["파일선택", "위", '음성 재안내', "아래", "취소"]
+        'extend':["파일선택", "위", '파일선택', "아래", "취소"]
 }
 
 class Ui_Dialog(generate_display):

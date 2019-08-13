@@ -190,8 +190,4 @@ def record(file, credential_path):
     return result_text
 
 if __name__ == '__main__':
-    print('{}'.format(sys.argv[1]))
-    if '{}'.format(sys.argv[2]) == 'voice':
-        trans('{}'.format(sys.argv[1]))
-    elif '{}'.format(sys.argv[2]) == 'record':
-        record('{}'.format(sys.argv[1]))
+    print(trans('C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'))
