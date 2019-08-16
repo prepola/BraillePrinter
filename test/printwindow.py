@@ -28,7 +28,7 @@ script = {
         'fatal':'음성인식을 실행할 수 없습니다.\ncredential path 및 Google Cloud Platform console을 확인해주세요.\n입력종료 버튼을 누르면 프린트과정이 종료됩니다.',
         'overtime':'입력 시간이 초과하였거나 입력에 실패하였습니다.\n다시 시도해주십시요.',
         'isright':'다음 내용이 맞습니까?',
-        'commit':'입력되었습니다\n다음줄로 이동합니다.',
+        'commit':'입력되었습니다. 다음줄로 이동합니다.',
         'end_not_save':'현재 진행하던 내용이 저장되지 않습니다. 종료하시려면 버튼을 한번 더 입력해 주세요',
         'end':'종료하시려면 버튼을 한번 더 입력해 주세요',
         'empty_title':'아무 내용도 입력되어 있지 않습니다. 먼저 입력시작 버튼으로 입력을 시작해주세요',
@@ -37,10 +37,84 @@ script = {
         'delete_guide_2':'을 삭제합니다. 삭제 하시려면 버튼을 한번 더 입력해주세요.',
         'delete_process':'삭제가 진행중입니다. 잠시만 기다려 주십시오.',
         'delete_failed':'해당 내용이 이미 인쇄 대기열에 포함되어 삭제할 수 없습니다.',
+        'delete_comp':'성공적으로 삭제 되었습니다.',
         'text_error':'스크립트를 읽을 수 없습니다. 스크립트 파일을 확인해주세요'
 }
 
 credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
+
+def print_streaming():
+    # self.make_voice('')
+    # if isinstance(self.select_item,str):
+    #     self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
+    #     return self.select_item
+    try:
+        stt_data = stt.trans(credential_path)
+    except:
+        print("bad auth JSON")
+        return 'fatal'
+
+    print('print_streaming:', stt_data)
+    if not isinstance(stt_data,str) | (len(stt_data) < 1):
+        return 'overtime'
+    # elif os.path.isfile('/mnt/usb'+stt_data+'.txt'): # 라즈베리파이
+    elif os.path.isfile(stt_data+'.txt'):
+        return 'duplicate'
+    else:
+        return stt_data
+
+def print_record(record_name):
+    # print("녹음프린트 기능을 클릭 하셨습니다.")
+    record_text = stt.record(record_name, credential_path)
+    return record_text
+
+def commit_text(stt_data, input_text):
+    # with open('/mnt/usb'+stt_data+'.txt','w') as fileh: # 라즈베리파이
+    with open('queue.json', 'r') as j_handle:
+        print_queue = json.load(j_handle)
+    while 1:
+        time.sleep(1)
+        if access_json(True):
+            if len(print_queue) < 1 :
+                print_queue[str(0)] = stt_data
+                continue
+            else:
+                print_queue[str(int(max(print_queue)) + 1)] = input_text
+                temp_json = json.dumps(print_queue)
+            with open('queue.json', 'w') as j_handle:
+                j_handle.write(temp_json)
+            if stt_data[-4:] != '.txt':
+                stt_data = stt_data+'.txt'
+            print('commit_text:', input_text)
+            with open(stt_data,'a') as fileh:
+                fileh.write(input_text+'\n')
+            return access_json(False)
+
+def rollback_text(body):
+    with open('queue.json', 'r') as j_handle:
+        print_queue = json.load(j_handle)
+    while 1:
+        time.sleep(1)
+        if access_json(True):
+            if body == print_queue[max(print_queue)]:
+                print_queue.pop(max(print_queue))
+                temp_json = json.dump(print_queue)
+            else:
+                access_json(False)
+                return False
+                # self.set_mode('print_body', 'delete_failed')
+                # break
+            with open('queue.json', 'w') as j_handle:
+                j_handle.write(temp_json)
+            access_json(False)
+            return True
+        
+def init_json():
+    with open('queue.json', 'w') as j_handle:
+        j_handle.write('{}')
+
+def access_json(bool_data):
+    return bool_data
 
 class Ui_Dialog(generate_display):
     def __init__(self, mode, fontsize):
@@ -52,7 +126,6 @@ class Ui_Dialog(generate_display):
         self.input_text = str()
         self.title = str()
         self.body = str()
-        self.access_flag = bool()
 
         self.create_worktable()
         self.set_buttonsize()
@@ -100,65 +173,13 @@ class Ui_Dialog(generate_display):
     def add_log(self, text):
         return self.workTable.append(script.get(text, text))
 
-# TODO: 수정해야 되는 부분
-
-    def print_streaming(self):
-        # self.make_voice('')
-        # if isinstance(self.select_item,str):
-        #     self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
-        #     return self.select_item
-        try:
-            stt_data = stt.trans(credential_path)
-        except:
-            print("bad auth JSON")
-            return 'fatal'
-
-        print('print_streaming:', stt_data)
-        if not isinstance(stt_data,str) | (len(stt_data) < 1):
-            return 'overtime'
-        # elif os.path.isfile('/mnt/usb'+stt_data+'.txt'): # 라즈베리파이
-        elif os.path.isfile(stt_data+'.txt'):
-            return 'duplicate'
-        else:
-            return stt_data
-
-    def print_record(self, record_name):
-        # print("녹음프린트 기능을 클릭 하셨습니다.")
-        record_text = stt.record(record_name, credential_path)
-        return record_text
-
-    def commit_text(self, stt_data, input_text):
-        # with open('/mnt/usb'+stt_data+'.txt','w') as fileh: # 라즈베리파이
-        while 1:
-            time.sleep(1)
-            self.access_flag = self.access_json(True)
-            if self.access_flag:
-                print_queue = json.load(open('queue.json', 'r'))
-                if len(print_queue[0]) < 1 :
-                    print_queue[0] = stt_data
-                    continue
-                else:
-                    print_queue[max(print_queue)+1] = input_text
-                    temp_json = json.dump(print_queue)
-                with open('queue.json', 'w') as j_handle:
-                    j_handle.write(temp_json)
-                    break
-        self.access_json(False)
-        if stt_data[-4:] != '.txt':
-            stt_data = stt_data+'.txt'
-        print('commit_text:', input_text)
-        with open(stt_data,'a') as fileh:
-            fileh.write(input_text+'\n')  
-
-# TODO: 여기까지
-
     def btn_1(self) :
         if self.get_mode() == 'print':
             self.set_mode('print_title', 'readytitle')
         elif self.get_mode() in ['print_title', 'print_body']:
             self.refresh_ui(gui_textlist.get('print_input', gui_textlist['error']))
             self.make_voice('')
-            self.input_text = self.print_streaming()
+            self.input_text = print_streaming()
             if self.input_text in script:
                 self.set_mode(self.get_mode(), script[self.input_text])
             else:
@@ -170,9 +191,8 @@ class Ui_Dialog(generate_display):
                 self.title = self.input_text
             else :
                 self.body = self.input_text
-                self.commit_text(self.title, self.body)
-            self.set_mode('print_body', 'commit')
-
+                commit_text(self.title, self.body)
+            self.set_mode('print_body', script.get('commit', script['text_error']))
 
     def btn_2(self) :
         self.make_voice(self.current_voice)
@@ -194,34 +214,19 @@ class Ui_Dialog(generate_display):
                 self.set_mode('print_delete', '')
         elif self.get_mode() == 'print_delete':
             self.make_voice(script['delete_process'])
-            while 1:
-                time.sleep(1)
-                self.access_flag = self.access_json(True)
-                if self.access_flag:
-                    with open('queue.json', 'r') as j_handle:
-                        print_queue = json.load(j_handle)
-                        if self.body == print_queue[max(print_queue)]:
-                            print_queue.pop(max(print_queue))
-                            temp_json = json.dump(print_queue)
-                        else:
-                            self.set_mode('print_body', 'delete_failed')
-                            break
-                    with open('queue.json', 'w') as j_handle:
-                        j_handle.write(temp_json)
-                        break
-            self.access_json(False)
+            if rollback_text() :
+                self.set_mode('print_body', 'delete_comp')
+            else :
+                self.set_mode('print_body', 'delete_failed')
             
-
     def btn_4(self) :
         if not self.end_flag:
-            self.set_mode(self.mode, 'end_not_save' if self.get_mode() in ['print_title', 'print_body', 'isright'] else 'end')
+            self.set_mode(self.mode, 'end_not_save' if self.get_mode() == 'isright' else 'end')
             self.end_flag = True
         elif self.end_flag:
+            init_json()
             self.set_mode('main')
             self.mainDialog.close()
-
-    def access_json(bool_data):
-        pass
     
 def main():
     app = QtWidgets.QApplication(sys.argv)
