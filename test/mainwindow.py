@@ -38,6 +38,7 @@ class Ui_Dialog(generate_display):
         self.mainLayout_4.addLayout(self.mainLayout, 1, 0, 1, 1)
 
     def btn_1(self) :
+        if self.debug : print('<', __name__, '>', 'btn_1')
         if self.get_mode() == 'main':
             self.set_mode('print_main')
             self.refresh_ui(gui_textlist[self.get_mode()])
@@ -46,14 +47,16 @@ class Ui_Dialog(generate_display):
             self.mainDialog.close()
 
     def btn_2(self) :
-        pass
+        if self.debug : print('<', __name__, '>', 'btn_2')
 
     def btn_3(self) :
+        if self.debug : print('<', __name__, '>', 'btn_3')
         if self.get_mode() == 'main':
             self.set_mode('record_main')
             self.refresh_ui(gui_textlist[self.get_mode()])
 
     def btn_4(self) :
+        if self.debug : print('<', __name__, '>', 'btn_4')
         if self.get_mode() == 'main':
             self.set_mode('doc_main')
             self.refresh_ui(gui_textlist[self.get_mode()])
@@ -64,7 +67,6 @@ class Ui_Dialog(generate_display):
 def main():
     app = QtWidgets.QApplication(sys.argv)
     mui = Ui_Dialog('main', 30)
-    mui.show_dialog()
     sys.exit(app.exec_())
 
 if __name__ == "__main__":

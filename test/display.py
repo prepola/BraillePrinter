@@ -7,6 +7,7 @@ color_code = 'tealA'
 color_data = json.load(open('colordata.json', 'r'))
 font_color = '#000000' if color_code in ['cyanA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
 back_color = color_data.get(color_code, color_data['gray'])
+debug = True
 
 class generate_display(QtWidgets.QDialog):
     def __init__(self, mode, fontsize, parent=None):
@@ -15,6 +16,7 @@ class generate_display(QtWidgets.QDialog):
         self.mode = mode
         self.font_color = font_color
         self.back_color = back_color
+        self.debug = debug
 
         self.mainDialog = QtWidgets.QDialog()
         self.mainDialog.resize(1024, 600)
@@ -66,16 +68,18 @@ class generate_display(QtWidgets.QDialog):
         return self.mode
     
     def set_mode(self, mode):
+        if self.debug : print('<', __name__, '>', 'set_mode:', mode)
         self.mode = mode
 
     def set_infotext(self, data):
+        if self.debug : print('<', __name__, '>', 'set_infotext:', data)
         if len(self.workTable.toPlainText()) < 1 :
             self.workTable.setText(data)
         else:
             self.workTable.append(data)
 
     def refresh_ui(self, text_list):
-        print(self.get_mode(), text_list[0])
+        if self.debug : print('<', __name__, '>', 'refresh_ui:', text_list)
         for i in range(5):
             if i == 0 : self.mainInfo.setText(text_list[i])          
             else : self.mainBtn[i-1].setText(text_list[i])

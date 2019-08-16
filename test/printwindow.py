@@ -150,6 +150,7 @@ class Ui_Dialog(generate_display):
         self.mainLayout_3.addWidget(self.workTable, 0, 0, 1, 1)
 
     def set_mode(self, mode, text = ''):
+        if self.debug : print('<', __name__, '>', 'set_mode:', mode, text)
         if text != '':
             self.add_log(text)
             self.make_voice(text)
@@ -157,10 +158,10 @@ class Ui_Dialog(generate_display):
         return super().set_mode(mode)
 
     def make_voice(self, text):
+        if self.debug : print('<', __name__, '>', 'make_voice:', text)
         if self.play_voice is not None:
             self.play_voice.stop()
             self.play_voice = None
-        print('make_voice:', text)
         if text != '':
             if text in script:
                 self.current_voice = script.get(text, script['text_error'])
@@ -171,9 +172,11 @@ class Ui_Dialog(generate_display):
             return self.play_voice.start()
 
     def add_log(self, text):
+        if self.debug : print('<', __name__, '>', 'add_log:', text)
         return self.workTable.append(script.get(text, text))
 
     def btn_1(self) :
+        if self.debug : print('<', __name__, '>', 'btn_1')
         if self.get_mode() == 'print':
             self.set_mode('print_title', 'readytitle')
         elif self.get_mode() in ['print_title', 'print_body']:
@@ -195,9 +198,11 @@ class Ui_Dialog(generate_display):
             self.set_mode('print_body', script.get('commit', script['text_error']))
 
     def btn_2(self) :
+        if self.debug : print('<', __name__, '>', 'btn_2')
         self.make_voice(self.current_voice)
 
     def btn_3(self) :
+        if self.debug : print('<', __name__, '>', 'btn_3')
         if self.get_mode() in ['print', 'print_title']:
             self.set_mode(self.get_mode(), script.get('empty_title', script['text_error']))
         elif self.get_mode() == 'isright':
@@ -220,6 +225,7 @@ class Ui_Dialog(generate_display):
                 self.set_mode('print_body', 'delete_failed')
             
     def btn_4(self) :
+        if self.debug : print('<', __name__, '>', 'btn_4')
         if not self.end_flag:
             self.set_mode(self.mode, 'end_not_save' if self.get_mode() == 'isright' else 'end')
             self.end_flag = True
