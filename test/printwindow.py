@@ -7,7 +7,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 from display import generate_display
 from python_raspberry import stt
-import tts
 
 gui_textlist = {
         'error':["프로그램 재시작 필요", "-", "-", "-", "-"],
@@ -41,7 +40,7 @@ script = {
         'text_error':'스크립트를 읽을 수 없습니다. 스크립트 파일을 확인해주세요'
 }
 
-credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
+credential_path = 'C:\\hanium project-3d7b2a095e96.json'
 
 def print_streaming():
     # self.make_voice('')
@@ -65,33 +64,33 @@ def print_streaming():
 
 def print_record(record_name):
     # print("녹음프린트 기능을 클릭 하셨습니다.")
-    record_text = stt.record(record_name, credential_path)
-    return record_text
+    return stt.record(record_name, credential_path)
 
-def commit_text(stt_data, input_text):
-    # with open('/mnt/usb'+stt_data+'.txt','w') as fileh: # 라즈베리파이
-    with open('queue.json', 'r') as j_handle:
+def commit_text(title, input_text):
+    # with open('/mnt/usb'+title+'.txt','w') as fileh: # 라즈베리파이
+    if os.path.isfile(title+'.json'):
+        pass
+    else:
+        init_json(title)
+        
+    with open(title+'.json', 'r') as j_handle:
         print_queue = json.load(j_handle)
     while 1:
         time.sleep(1)
         if access_json(True):
-            if len(print_queue) < 1 :
-                print_queue[str(0)] = stt_data
-                continue
-            else:
-                print_queue[str(int(max(print_queue)) + 1)] = input_text
-                temp_json = json.dumps(print_queue)
+            print_queue[str(int(max(print_queue)) + 1)] = input_text
+            temp_json = json.dumps(print_queue)
             with open('queue.json', 'w') as j_handle:
                 j_handle.write(temp_json)
-            if stt_data[-4:] != '.txt':
-                stt_data = stt_data+'.txt'
+            if title[-4:] != '.txt':
+                title = title+'.txt'
             print('commit_text:', input_text)
-            with open(stt_data,'a') as fileh:
+            with open(title,'a') as fileh:
                 fileh.write(input_text+'\n')
             return access_json(False)
 
-def rollback_text(body):
-    with open('queue.json', 'r') as j_handle:
+def rollback_text(title, body):
+    with open(title+'.json', 'r') as j_handle:
         print_queue = json.load(j_handle)
     while 1:
         time.sleep(1)
@@ -109,8 +108,8 @@ def rollback_text(body):
             access_json(False)
             return True
         
-def init_json():
-    with open('queue.json', 'w') as j_handle:
+def init_json(name):
+    with open(name+'.json', 'w') as j_handle:
         j_handle.write('{}')
 
 def access_json(bool_data):
@@ -120,9 +119,7 @@ class Ui_Dialog(generate_display):
     def __init__(self, mode, fontsize):
         super().__init__(mode, fontsize)
 
-        self.play_voice = None
         self.end_flag = False
-        self.current_voice = str()
         self.input_text = str()
         self.title = str()
         self.body = str()
@@ -156,20 +153,6 @@ class Ui_Dialog(generate_display):
             self.make_voice(text)
         self.refresh_ui(gui_textlist.get(mode, gui_textlist['error']))
         return super().set_mode(mode)
-
-    def make_voice(self, text):
-        if self.debug : print('<', __name__, '>', 'make_voice:', text)
-        if self.play_voice is not None:
-            self.play_voice.stop()
-            self.play_voice = None
-        if text != '':
-            if text in script:
-                self.current_voice = script.get(text, script['text_error'])
-                self.play_voice = tts.run_voice(script.get(text, script['text_error']))
-            else:
-                self.current_voice = text
-                self.play_voice = tts.run_voice(text)
-            return self.play_voice.start()
 
     def add_log(self, text):
         if self.debug : print('<', __name__, '>', 'add_log:', text)
@@ -230,7 +213,7 @@ class Ui_Dialog(generate_display):
             self.set_mode(self.mode, 'end_not_save' if self.get_mode() == 'isright' else 'end')
             self.end_flag = True
         elif self.end_flag:
-            init_json()
+            #init_json()
             self.set_mode('main')
             self.mainDialog.close()
     
