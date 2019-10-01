@@ -80,7 +80,7 @@ def commit_text(title, input_text):
         if access_json(True):
             print_queue[str(int(max(print_queue)) + 1)] = input_text
             temp_json = json.dumps(print_queue)
-            with open('queue.json', 'w') as j_handle:
+            with open(title+'.json', 'w') as j_handle:
                 j_handle.write(temp_json)
             if title[-4:] != '.txt':
                 title = title+'.txt'
@@ -103,7 +103,7 @@ def rollback_text(title, body):
                 return False
                 # self.set_mode('print_body', 'delete_failed')
                 # break
-            with open('queue.json', 'w') as j_handle:
+            with open(title+'.json', 'w') as j_handle:
                 j_handle.write(temp_json)
             access_json(False)
             return True
@@ -112,8 +112,23 @@ def init_json(name):
     with open(name+'.json', 'w') as j_handle:
         j_handle.write('{}')
 
-def access_json(bool_data):
-    return bool_data
+def access_json(bool_data, name=''):
+    with open('access.json', 'w') as j_handle:
+        data = json.load(j_handle)
+        if bool_data :
+            if !(bool(data['access'])):
+                if name != '':
+                    data['name'] = name
+                data['access'] = 'True'
+                j_handle.write(data)
+            else: data['access'] = 'False'
+        else :
+            if bool(data['access']):
+                data['access'] = 'False'
+                j_handle.write(data)
+            else:
+                print('invalid access')
+    return data['access']
 
 class Ui_Dialog(generate_display):
     def __init__(self, mode, fontsize):
