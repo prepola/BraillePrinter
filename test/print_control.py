@@ -3,6 +3,19 @@ import time
 import glob
 import os
 
+import serial
+import hbcvt.h2b.text as hc
+
+def serial_init():
+    return serial.Serial(
+        port='COM1',
+        baudrate=115200,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        timeout=0
+        )
+
 def access_json(bool_data, name = ''):
     with open('access.json', 'w') as j_handle:
         data = json.load(j_handle)
@@ -47,16 +60,29 @@ def pop_text(title):
         return print_data
 
 def main():
+    ser = serial_init()
     while 1:
+        state = str()
+        dot_data_3 = []
         if access_json(True) :
             name = get_name()
             if len(name) != 0:
-                pass
+                str_data = pop_text(name)
+                if len(str_data) != 0:
+                    for word_data in hc(str_data):
+                        for consonant_data in word_data:
+                            for dot_data_6 in consonant_data[1]:
+                                dot_data_3.append(dot_data_6[:])
+                    ser.write(bytearray(dot_data_3))
+                    state = 'Transfer complete'
+                else :
+                    state = 'No have body. waiting for next time'
             else :
-                print('name Not found')
+                state = 'name Not found'
         else :
-            print('Failed to get access flag , waiting for next time')
+            state = 'Failed to get access flag, waiting for next time'
         access_json(False)
+        print(state)
         time.sleep(1)
 
 
