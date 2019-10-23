@@ -75,7 +75,10 @@ def commit_text(title, input_text):
         init_json(title)
         
     with open(title+'.json', 'r') as j_handle:
-        print_queue = json.load(j_handle)
+        try:
+            print_queue = json.load(j_handle)
+        except:
+            print_queue = {}
     while 1:
         time.sleep(1)
         if access_json(True):
@@ -113,23 +116,26 @@ def init_json(name):
     with open(name+'.json', 'w') as j_handle:
         j_handle.write('{}')
 
+# def access_json(bool_data, name=''):
+#     with open('access.json', 'r') as access_handle:
+#         data = json.load(access_handle)
+#         write_data = None
+#         if bool_data : # True로 호출시
+#             if data['access']: # True일 때만
+#                 if name != '': 
+#                     data['name'] = name
+#                 write_data = 0 # False으로 기록
+#             else: return False
+#         else : # False로 호출시
+#             if data['access'] == 0: write_data = 1 # False일 때만
+#             else: return False # True으로 기록
+#     data['access'] = write_data
+#     with open('access.json', 'w') as access_handle:
+#         conv_data = json.dumps(data)
+#         access_handle.write(conv_data)
+#     return True
+
 def access_json(bool_data, name=''):
-    with open('access.json', 'r') as j_handle:
-        data = json.load(j_handle)
-        write_data = None
-        if bool_data : # True로 호출시
-            if bool(data['access']): # True일 때만
-                if name != '': 
-                    data['name'] = name
-                write_data = 'False' # False으로 기록
-            else: return False
-        else : # False로 호출시
-            if not(bool(data['access'])): # False일 때만
-                write_data = 'True' # True으로 기록
-            else: return False
-    data['access'] = write_data
-    with open('access.json', 'w') as j_handle:
-        j_handle.write(data)
     return True
 
 class Ui_Dialog(generate_display):
@@ -194,7 +200,7 @@ class Ui_Dialog(generate_display):
                 self.title = self.input_text
             else :
                 self.body = self.input_text
-                commit_text(self.title, self.body)
+                # commit_text(self.title, self.body)
             self.set_mode('print_body', script.get('commit', script['text_error']))
 
     def btn_2(self) :

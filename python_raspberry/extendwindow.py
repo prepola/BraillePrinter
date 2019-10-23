@@ -35,6 +35,40 @@ class Ui_Dialog(generate_display):
         self.mainLayout_4.addLayout(self.mainLayout_3, 1, 0, 1, 1)
         self.mainLayout_4.addLayout(self.mainLayout, 2, 0, 1, 1)
         self.mainLayout_3.addWidget(self.listView, 0, 0, 1, 1)
+    
+    def btn_1(self) :
+        if self.debug : print('<', __name__, '>', 'btn_1')
+        if self.get_mode() == 'main':
+            self.set_mode('print_main')
+            self.refresh_ui(gui_textlist[self.get_mode()])
+        elif self.get_mode() == 'print_main':
+            self.set_mode('print')
+            self.mainDialog.close()
+
+    def btn_2(self) :
+        if self.debug : print('<', __name__, '>', 'btn_2')
+
+    def btn_3(self) :
+        if self.debug : print('<', __name__, '>', 'btn_3')
+        if self.get_mode() == 'main':
+            self.set_mode('record_main')
+            self.refresh_ui(gui_textlist[self.get_mode()])
+        if self.get_mode() == 'record_main':
+            self.set_mode('extend')
+            self.mainDialog.close()
+
+    def btn_4(self) :
+        if self.debug : print('<', __name__, '>', 'btn_4')
+        if self.get_mode() == 'main':
+            self.set_mode('doc_main')
+            self.refresh_ui(gui_textlist[self.get_mode()])
+        if self.get_mode() == 'doc_main':
+            self.set_mode('extend')
+            self.mainDialog.close()
+        elif self.get_mode() != 'main':
+            self.set_mode('main')
+            self.refresh_ui(gui_textlist[self.get_mode()])
+
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

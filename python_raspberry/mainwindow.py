@@ -53,12 +53,18 @@ class Ui_Dialog(generate_display):
         if self.get_mode() == 'main':
             self.set_mode('record_main')
             self.refresh_ui(gui_textlist[self.get_mode()])
+        if self.get_mode() == 'record_main':
+            self.set_mode('extend')
+            self.mainDialog.close()
 
     def btn_4(self) :
         if self.debug : print('<', __name__, '>', 'btn_4')
         if self.get_mode() == 'main':
             self.set_mode('doc_main')
             self.refresh_ui(gui_textlist[self.get_mode()])
+        if self.get_mode() == 'doc_main':
+            self.set_mode('extend')
+            self.mainDialog.close()
         elif self.get_mode() != 'main':
             self.set_mode('main')
             self.refresh_ui(gui_textlist[self.get_mode()])
