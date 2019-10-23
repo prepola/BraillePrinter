@@ -2,17 +2,22 @@ import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
-from mainwindow import Ui_Dialog as mainDialog
-import printwindow as printDialog
-from extendwindow import Ui_Dialog as extendDialog
+from python_raspberry.mainwindow import Ui_Dialog as mainDialog
+from python_raspberry.printwindow import Ui_Dialog as printDialog
+from python_raspberry.extendwindow import Ui_Dialog as extendDialog
+
+# from python_rasberry.mainwindow import Ui_Dialog as mainDialog
+# import python_rasberry.printwindow as printDialog
+# from python_rasberry.extendwindow import Ui_Dialog as extendDialog
 
 def main():
     place_display = mainDialog
     next_mode = 'main'
     app = QtWidgets.QApplication(sys.argv)
 
+
     change_display = {
-        'print':printDialog.Ui_Dialog,
+        'print':printDialog,
         'extend':extendDialog,
         'main':mainDialog
     }

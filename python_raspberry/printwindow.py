@@ -4,8 +4,9 @@ import json
 import time
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
-sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-from display import generate_display
+# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
+from python_raspberry.display import generate_display
+# from display import generate_display
 from python_raspberry import stt
 
 gui_textlist = {
@@ -113,22 +114,23 @@ def init_json(name):
         j_handle.write('{}')
 
 def access_json(bool_data, name=''):
-    with open('access.json', 'w') as j_handle:
+    with open('access.json', 'r') as j_handle:
         data = json.load(j_handle)
-        if bool_data :
-            if !(bool(data['access'])):
-                if name != '':
+        write_data = None
+        if bool_data : # True로 호출시
+            if bool(data['access']): # True일 때만
+                if name != '': 
                     data['name'] = name
-                data['access'] = 'True'
-                j_handle.write(data)
-            else: data['access'] = 'False'
-        else :
-            if bool(data['access']):
-                data['access'] = 'False'
-                j_handle.write(data)
-            else:
-                print('invalid access')
-    return data['access']
+                write_data = 'False' # False으로 기록
+            else: return False
+        else : # False로 호출시
+            if not(bool(data['access'])): # False일 때만
+                write_data = 'True' # True으로 기록
+            else: return False
+    data['access'] = write_data
+    with open('access.json', 'w') as j_handle:
+        j_handle.write(data)
+    return True
 
 class Ui_Dialog(generate_display):
     def __init__(self, mode, fontsize):

@@ -3,10 +3,10 @@ import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import json
 
-import tts
+from python_raspberry import tts
 
 color_code = 'tealA'
-color_data = json.load(open('colordata.json', 'r'))
+color_data = json.load(open('python_raspberry/colordata.json', 'r'))
 font_color = '#000000' if color_code in ['cyanA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
 back_color = color_data.get(color_code, color_data['gray'])
 debug = True

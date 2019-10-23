@@ -34,7 +34,7 @@ class run_voice(threading.Thread):
         Note: ssml must be well-formed according to:
             https://www.w3.org/TR/speech-synthesis/
         """
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:\\Users\\BossMonster\\Documents\\hanium project-3d7b2a095e96.json'
         # Instantiates a client
         client = texttospeech.TextToSpeechClient()
 

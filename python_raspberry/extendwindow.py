@@ -2,7 +2,7 @@ import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
-from display import generate_display
+from python_raspberry.display import generate_display
 
 gui_textlist = {
         'error':["프로그램 재시작 필요", "-", "-", "-", "-"],

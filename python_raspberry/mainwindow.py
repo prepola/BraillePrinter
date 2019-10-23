@@ -2,9 +2,8 @@ import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 
-from display import generate_display
-from printwindow import Ui_Dialog as printDialog
-from extendwindow import Ui_Dialog as extendDialog
+# from python_raspberry import display
+from python_raspberry.display import generate_display
 
 #ㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 #| btn_1 | btn_2 |
