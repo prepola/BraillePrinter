@@ -27,7 +27,7 @@ class Ui_Dialog(generate_display):
         self.set_layout()
         self.refresh_ui(gui_textlist['main'])
         
-        @self.make_voice
+        @self.make_voice_btn
         def btn_1_func(self) :
             if self.debug : print('<', __name__, '>', 'btn_1')
             if self.get_mode() == 'main':

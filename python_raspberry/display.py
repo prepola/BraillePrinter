@@ -112,36 +112,24 @@ class generate_display(QtWidgets.QDialog):
             if i == 0 : self.mainInfo.setText(text_list[i])          
             else : self.mainBtn[i-1].setText(text_list[i])
 
-    # def make_voice(self, text):
-    #     if self.play_voice is not None:
-    #         self.play_voice.stop()
-    #         self.play_voice = None
-    #     if text != '':
-    #         if text in script:
-    #             self.current_voice = script.get(text, script['text_error'])
-    #             self.play_voice = tts.run_voice(script.get(text, script['text_error']))
-    #         else:
-    #             self.current_voice = text
-    #             self.play_voice = tts.run_voice(text)
-    #         return self.play_voice.start()
+    def make_voice(self):
+        if self.play_voice is not None:
+            self.play_voice.stop()
+            self.play_voice = None
+        if self.call_voice != '':
+            if self.call_voice in script:
+                self.current_voice = script.get(self.call_voice, script['text_error'])
+                self.play_voice = tts.run_voice(script.get(self.call_voice, script['text_error']))
+            else:
+                self.current_voice = self.call_voice
+                self.play_voice = tts.run_voice(self.call_voice)
+            self.play_voice.start()
 
-    def make_voice(self, func):
+    def make_voice_btn(self, func):
         def voice():
+            func(self)
             print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
-            if self.play_voice is not None:
-                self.play_voice.stop()
-                self.play_voice = None
-            if self.call_voice != '':
-                if self.call_voice in script:
-                    print('dict')
-                    self.current_voice = script.get(self.call_voice, script['text_error'])
-                    self.play_voice = tts.run_voice(script.get(self.call_voice, script['text_error']))
-                else:
-                    print('any')
-                    self.current_voice = self.call_voice
-                    self.play_voice = tts.run_voice(self.call_voice)
-                self.play_voice.start()
-            return func(self)
+            make_voice(self)
         return voice
 
     
