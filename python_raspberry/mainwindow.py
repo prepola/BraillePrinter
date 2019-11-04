@@ -26,6 +26,20 @@ class Ui_Dialog(generate_display):
         self.set_buttonsize()
         self.set_layout()
         self.refresh_ui(gui_textlist['main'])
+        
+        @self.make_voice
+        def btn_1_func(self) :
+            if self.debug : print('<', __name__, '>', 'btn_1')
+            if self.get_mode() == 'main':
+                self.call_voice = '불럿습니까?'
+                self.set_mode('print_main')
+                self.refresh_ui(gui_textlist[self.get_mode()])
+            elif self.get_mode() == 'print_main':
+                self.set_mode('print')
+                self.mainDialog.close()
+        
+        self.btn_1 = btn_1_func
+
         self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
 
     def set_buttonsize(self) :
@@ -35,15 +49,6 @@ class Ui_Dialog(generate_display):
     def set_layout(self):
         self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
         self.mainLayout_4.addLayout(self.mainLayout, 1, 0, 1, 1)
-
-    def btn_1(self) :
-        if self.debug : print('<', __name__, '>', 'btn_1')
-        if self.get_mode() == 'main':
-            self.set_mode('print_main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
-        elif self.get_mode() == 'print_main':
-            self.set_mode('print')
-            self.mainDialog.close()
 
     def btn_2(self) :
         if self.debug : print('<', __name__, '>', 'btn_2')
