@@ -89,16 +89,16 @@ void HAL_MspInit(void)
 */
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 {
-  if(htim_base->Instance==TIM4)
+  if(htim_base->Instance==TIM9)
   {
-  /* USER CODE BEGIN TIM4_MspInit 0 */
+  /* USER CODE BEGIN TIM9_MspInit 0 */
 
-  /* USER CODE END TIM4_MspInit 0 */
+  /* USER CODE END TIM9_MspInit 0 */
     /* Peripheral clock enable */
-    __HAL_RCC_TIM4_CLK_ENABLE();
-  /* USER CODE BEGIN TIM4_MspInit 1 */
+    __HAL_RCC_TIM9_CLK_ENABLE();
+  /* USER CODE BEGIN TIM9_MspInit 1 */
 
-  /* USER CODE END TIM4_MspInit 1 */
+  /* USER CODE END TIM9_MspInit 1 */
   }
 
 }
@@ -106,26 +106,26 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef* htim_base)
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(htim->Instance==TIM4)
+  if(htim->Instance==TIM9)
   {
-  /* USER CODE BEGIN TIM4_MspPostInit 0 */
+  /* USER CODE BEGIN TIM9_MspPostInit 0 */
 
-  /* USER CODE END TIM4_MspPostInit 0 */
+  /* USER CODE END TIM9_MspPostInit 0 */
   
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-    /**TIM4 GPIO Configuration    
-    PB6     ------> TIM4_CH1 
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    /**TIM9 GPIO Configuration    
+    PC4     ------> TIM9_CH1 
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_6;
+    GPIO_InitStruct.Pin = GPIO_PIN_4;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF2_TIM4;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    GPIO_InitStruct.Alternate = GPIO_AF3_TIM9;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /* USER CODE BEGIN TIM4_MspPostInit 1 */
+  /* USER CODE BEGIN TIM9_MspPostInit 1 */
 
-  /* USER CODE END TIM4_MspPostInit 1 */
+  /* USER CODE END TIM9_MspPostInit 1 */
   }
 
 }
@@ -137,16 +137,86 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef* htim)
 */
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* htim_base)
 {
-  if(htim_base->Instance==TIM4)
+  if(htim_base->Instance==TIM9)
   {
-  /* USER CODE BEGIN TIM4_MspDeInit 0 */
+  /* USER CODE BEGIN TIM9_MspDeInit 0 */
 
-  /* USER CODE END TIM4_MspDeInit 0 */
+  /* USER CODE END TIM9_MspDeInit 0 */
     /* Peripheral clock disable */
-    __HAL_RCC_TIM4_CLK_DISABLE();
-  /* USER CODE BEGIN TIM4_MspDeInit 1 */
+    __HAL_RCC_TIM9_CLK_DISABLE();
+  /* USER CODE BEGIN TIM9_MspDeInit 1 */
 
-  /* USER CODE END TIM4_MspDeInit 1 */
+  /* USER CODE END TIM9_MspDeInit 1 */
+  }
+
+}
+
+/**
+* @brief UART MSP Initialization
+* This function configures the hardware resources used in this example
+* @param huart: UART handle pointer
+* @retval None
+*/
+void HAL_UART_MspInit(UART_HandleTypeDef* huart)
+{
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
+  if(huart->Instance==USART6)
+  {
+  /* USER CODE BEGIN USART6_MspInit 0 */
+
+  /* USER CODE END USART6_MspInit 0 */
+    /* Peripheral clock enable */
+    __HAL_RCC_USART6_CLK_ENABLE();
+  
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+    /**USART6 GPIO Configuration    
+    PC6     ------> USART6_TX
+    PC7     ------> USART6_RX 
+    */
+    GPIO_InitStruct.Pin = GPIO_PIN_6|GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_PULLUP;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF8_USART6;
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    /* USART6 interrupt Init */
+    HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(USART6_IRQn);
+  /* USER CODE BEGIN USART6_MspInit 1 */
+
+  /* USER CODE END USART6_MspInit 1 */
+  }
+
+}
+
+/**
+* @brief UART MSP De-Initialization
+* This function freeze the hardware resources used in this example
+* @param huart: UART handle pointer
+* @retval None
+*/
+void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
+{
+  if(huart->Instance==USART6)
+  {
+  /* USER CODE BEGIN USART6_MspDeInit 0 */
+
+  /* USER CODE END USART6_MspDeInit 0 */
+    /* Peripheral clock disable */
+    __HAL_RCC_USART6_CLK_DISABLE();
+  
+    /**USART6 GPIO Configuration    
+    PC6     ------> USART6_TX
+    PC7     ------> USART6_RX 
+    */
+    HAL_GPIO_DeInit(GPIOC, GPIO_PIN_6|GPIO_PIN_7);
+
+    /* USART6 interrupt DeInit */
+    HAL_NVIC_DisableIRQ(USART6_IRQn);
+  /* USER CODE BEGIN USART6_MspDeInit 1 */
+
+  /* USER CODE END USART6_MspDeInit 1 */
   }
 
 }

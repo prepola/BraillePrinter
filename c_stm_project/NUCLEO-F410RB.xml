@@ -10,11 +10,11 @@
 ]>
 
 <targetDefinitions>
-  <board id="nucleo-f401re">
-    <name>NUCLEO-F401RE</name>
-    <dbgIF>JTAG</dbgIF>
+  <board id="nucleo-f410rb">
+    <name>NUCLEO-F410RB</name>
     <dbgIF>SWD</dbgIF>
+    <dbgIF>JTAG</dbgIF>
     <dbgDEV>ST-Link</dbgDEV>
-    <mcuId>stm32f401retx</mcuId>
+    <mcuId>stm32f410rbtx</mcuId>
   </board>
 </targetDefinitions>
