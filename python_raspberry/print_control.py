@@ -4,7 +4,7 @@ import glob
 import os
 
 import serial
-import hbcvt.h2b.text as hc
+import hbcvt as hc
 
 def serial_init():
     return serial.Serial(
@@ -37,57 +37,52 @@ def access_json(bool_data):
 #                 print('invalid access')
 #     return data['access']
 
-def get_name():
-    with open('access.json', 'w') as j_handle:
-        data = json.load(j_handle)
-        if len(data['name']) != 0 :
-            return data['name']
-        else :
-            return ''
-
 def pop_text(title):
     # with open('/mnt/usb'+title+'.txt','w') as fileh: # 라즈베리파이
-    if os.path.isfile(title+'.json'):
+    if os.path.isfile(title):
         pass
     else:
         print('Not file found')
-        
-    with open(title+'.json', 'w') as j_handle:
+    print(title)
+    with open(title, 'r') as j_handle:
         print_queue = json.load(j_handle)
-        if body == print_queue[max(print_queue)]:
-            print_data = print_queue.pop(max(print_queue))
-            temp_json = json.dump(print_queue)
-        else:
+        try:
+            print_data = print_queue.pop(min(print_queue))
+        except:
             return ''
-        j_handle.write(temp_json)
-        return print_data
+    with open(title, 'w') as j_hand:
+        temp_json = json.dumps(print_queue)
+        j_hand.write(temp_json)
+    return print_data
 
-def main():
+
+
+def print_con(name):
     ser = serial_init()
-    while 1:
-        state = str()
-        dot_data_3 = []
-        if access_json(True) :
-            name = get_name()
-            if len(name) != 0:
-                str_data = pop_text(name)
-                if len(str_data) != 0:
-                    for word_data in hc(str_data):
-                        for consonant_data in word_data:
-                            for dot_data_6 in consonant_data[1]:
-                                dot_data_3.append(dot_data_6[:])
-                    ser.write(bytearray(dot_data_3))
-                    state = 'Transfer complete'
-                else :
-                    state = 'No have body. waiting for next time'
+    dot_index = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+    state = str()
+    dot_data_3 = []
+    if access_json(True) :
+        for file_name in glob.glob('{}.json'.format(name)):
+            str_data = pop_text(file_name)
+            if len(str_data) != 0:
+                for word_data in hc.h2b.text(str_data):
+                    for consonant_data in word_data[1]:
+                        for dot_data_6 in consonant_data[1]:
+                            data_up = dot_index.index(dot_data_6[:3])
+                            ser.write(data_up.encode('utf-8'))
+                            data_down = dot_index.index(dot_data_6[3:])
+                            ser.write(data_down.encode('utf-8'))
+                            print(data_up, data_down)
+                ser.write('9'.encode('utf-8'))
+                state = 'Transfer complete'
             else :
-                state = 'name Not found'
-        else :
-            state = 'Failed to get access flag, waiting for next time'
-        access_json(False)
-        print(state)
-        time.sleep(1)
+                state = 'No have body. waiting for next time'
+    else :
+        state = 'Failed to get access flag, waiting for next time'
+    access_json(False)
+    print(state)
 
 
 if __name__ == "__main__":
-    main()
+    print_con('테스트')

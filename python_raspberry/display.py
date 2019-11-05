@@ -36,7 +36,7 @@ script = {
 
 btn_1_script={
     'main':'음성 프린트를 진행하는 버튼입니다. 음성 프린트 실행을 위해 버튼을 한번 더 눌러주세요.',
-    'print_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
+    'print_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.',
 }
 btn_2_script={
     'main':'재안내 버튼입니다.',
@@ -55,7 +55,8 @@ btn_script_connect = {
     'btn_1_func':btn_1_script,
     'btn_2_func':btn_2_script,
     'btn_3_func':btn_3_script,
-    'btn_4_func':btn_4_script
+    'btn_4_func':btn_4_script,
+    'error':'error'
 } 
 
 class generate_display(QtWidgets.QDialog):
@@ -155,10 +156,12 @@ class generate_display(QtWidgets.QDialog):
         def voice():
             if self.run_flag():
                 func(self)
-            print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
-            if func.__name__
-            self.call_voice = '버튼입니다 한번 더 입력하면 실행합니다.{}'.format(func.__name__)
-            self.make_voice()
+                self.call_voice = ''
+                self.make_voice()
+            else:
+                print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
+                self.call_voice = btn_script_connect.get(func.__name__, 'error connect').get(self.mode, 'error script')
+                self.make_voice()
         return voice
 
     

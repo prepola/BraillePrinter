@@ -29,16 +29,42 @@ class Ui_Dialog(generate_display):
         
         @self.make_voice_btn
         def btn_1_func(self) :
-            if self.debug : print('<', __name__, '>', 'btn_1')
             if self.get_mode() == 'main':
-                self.call_voice = '불럿습니까?'
                 self.set_mode('print_main')
                 self.refresh_ui(gui_textlist[self.get_mode()])
             elif self.get_mode() == 'print_main':
                 self.set_mode('print')
                 self.mainDialog.close()
         
+        def btn_2_func() :
+            self.make_voice()
+
+        @self.make_voice_btn
+        def btn_3_func(self) :
+            if self.get_mode() == 'main':
+                self.set_mode('record_main')
+                self.refresh_ui(gui_textlist[self.get_mode()])
+            if self.get_mode() == 'record_main':
+                self.set_mode('extend')
+                self.mainDialog.close()
+        
+        @self.make_voice_btn
+        def btn_4_func(self) :
+            if self.debug : print('<', __name__, '>', 'btn_4')
+            if self.get_mode() == 'main':
+                self.set_mode('doc_main')
+                self.refresh_ui(gui_textlist[self.get_mode()])
+            if self.get_mode() == 'doc_main':
+                self.set_mode('extend')
+                self.mainDialog.close()
+            elif self.get_mode() != 'main':
+                self.set_mode('main')
+                self.refresh_ui(gui_textlist[self.get_mode()])
+
         self.btn_1 = btn_1_func
+        self.btn_2 = btn_2_func
+        self.btn_3 = btn_3_func
+        self.btn_4 = btn_4_func
 
         self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
 
@@ -50,29 +76,7 @@ class Ui_Dialog(generate_display):
         self.mainLayout_2.setContentsMargins(250, 30, 250, 30)
         self.mainLayout_4.addLayout(self.mainLayout, 1, 0, 1, 1)
 
-    def btn_2(self) :
-        if self.debug : print('<', __name__, '>', 'btn_2')
 
-    def btn_3(self) :
-        if self.debug : print('<', __name__, '>', 'btn_3')
-        if self.get_mode() == 'main':
-            self.set_mode('record_main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
-        if self.get_mode() == 'record_main':
-            self.set_mode('extend')
-            self.mainDialog.close()
-
-    def btn_4(self) :
-        if self.debug : print('<', __name__, '>', 'btn_4')
-        if self.get_mode() == 'main':
-            self.set_mode('doc_main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
-        if self.get_mode() == 'doc_main':
-            self.set_mode('extend')
-            self.mainDialog.close()
-        elif self.get_mode() != 'main':
-            self.set_mode('main')
-            self.refresh_ui(gui_textlist[self.get_mode()])
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

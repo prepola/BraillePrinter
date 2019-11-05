@@ -8,6 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 from python_raspberry.display import generate_display
 # from display import generate_display
 from python_raspberry import stt
+from python_raspberry import print_control
 
 gui_textlist = {
         'error':["프로그램 재시작 필요", "-", "-", "-", "-"],
@@ -41,7 +42,7 @@ script = {
         'text_error':'스크립트를 읽을 수 없습니다. 스크립트 파일을 확인해주세요'
 }
 
-credential_path = 'C:\\hanium project-3d7b2a095e96.json'
+credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
 
 def print_streaming():
     # self.call_voice = '')
@@ -80,10 +81,12 @@ def commit_text(title, input_text):
         except:
             print_queue = {}
     while 1:
-        time.sleep(1)
         if access_json(True):
-            print_queue[str(int(max(print_queue)) + 1)] = input_text
-            temp_json = json.dumps(print_queue)
+            try:
+                print_queue[str(int(max(print_queue)) + 1)] = input_text
+            except ValueError:
+                print_queue['0'] = input_text
+            temp_json = json.dumps(print_queue, ensure_ascii=False)
             with open(title+'.json', 'w') as j_handle:
                 j_handle.write(temp_json)
             if title[-4:] != '.txt':
@@ -174,6 +177,7 @@ class Ui_Dialog(generate_display):
         if text != '':
             self.add_log(text)
             self.call_voice = text
+            self.make_voice()
         self.refresh_ui(gui_textlist.get(mode, gui_textlist['error']))
         return super().set_mode(mode)
 
@@ -200,7 +204,8 @@ class Ui_Dialog(generate_display):
                 self.title = self.input_text
             else :
                 self.body = self.input_text
-                # commit_text(self.title, self.body)
+                commit_text(self.title, self.body)
+                print_control.print_con(self.title)
             self.set_mode('print_body', script.get('commit', script['text_error']))
 
     def btn_2(self) :
