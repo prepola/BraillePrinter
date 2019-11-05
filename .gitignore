@@ -1,1 +1,4 @@
-*.pyc
+*/*.pyc
+*/*.wav
+*/stt.py
+*/tts.py

@@ -2,10 +2,11 @@ import sys
 import os
 from PyQt5 import QtCore, QtGui, QtWidgets, Qt
 import json
+import itertools
 
 from python_raspberry import tts
 
-color_code = 'tealA'
+color_code = 'orangeA'
 color_data = json.load(open('python_raspberry/colordata.json', 'r'))
 font_color = '#000000' if color_code in ['cyanA', 'greenA', 'lightgreen', 'lightgreenA', 'lime', 'limeA', 'yellow', 'yellowA', 'amber', 'amberA', 'orange', 'orangeA', 'bw'] else '#FFFFFF'
 back_color = color_data.get(color_code, color_data['gray'])
@@ -32,6 +33,30 @@ script = {
         'delete_comp':'성공적으로 삭제 되었습니다.',
         'text_error':'스크립트를 읽을 수 없습니다. 스크립트 파일을 확인해주세요'
 }
+
+btn_1_script={
+    'main':'음성 프린트를 진행하는 버튼입니다. 음성 프린트 실행을 위해 버튼을 한번 더 눌러주세요.',
+    'print_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
+}
+btn_2_script={
+    'main':'재안내 버튼입니다.',
+    'print_main':'재안내 버튼입니다.'
+}
+btn_3_script={
+    'main':'녹음 프린트를 진행하는 버튼입니다. 녹음 프린트 실행을 위해 버튼을 한번 더 눌러주세요.',
+    'print_main':'기존 파일에 이어서 기록합니다. 기존 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
+}
+btn_4_script={
+    'main':'문서 프린트를 진행하는 버튼입니다. 문서 프린트 실행을 위해 한번 더 눌러주세요.',
+    'print_main':'현재 선택을 취소하고 뒤로 돌아갑니다. 뒤로 가기 위해 한번 더 눌러주세요.'
+}
+
+btn_script_connect = {
+    'btn_1_func':btn_1_script,
+    'btn_2_func':btn_2_script,
+    'btn_3_func':btn_3_script,
+    'btn_4_func':btn_4_script
+} 
 
 class generate_display(QtWidgets.QDialog):
     def __init__(self, mode, fontsize, parent=None):
@@ -126,10 +151,14 @@ class generate_display(QtWidgets.QDialog):
             self.play_voice.start()
 
     def make_voice_btn(self, func):
+        self.run_flag = itertools.cycle([False, True]).__next__
         def voice():
-            func(self)
+            if self.run_flag():
+                func(self)
             print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
-            make_voice(self)
+            if func.__name__
+            self.call_voice = '버튼입니다 한번 더 입력하면 실행합니다.{}'.format(func.__name__)
+            self.make_voice()
         return voice
 
     

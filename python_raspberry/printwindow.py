@@ -44,7 +44,7 @@ script = {
 credential_path = 'C:\\hanium project-3d7b2a095e96.json'
 
 def print_streaming():
-    # self.make_voice('')
+    # self.call_voice = '')
     # if isinstance(self.select_item,str):
     #     self.dis[1].set_infotext('파일 '+self.select_item+' 로 시작합니다.')
     #     return self.select_item
@@ -173,7 +173,7 @@ class Ui_Dialog(generate_display):
         if self.debug : print('<', __name__, '>', 'set_mode:', mode, text)
         if text != '':
             self.add_log(text)
-            self.make_voice(text)
+            self.call_voice = text
         self.refresh_ui(gui_textlist.get(mode, gui_textlist['error']))
         return super().set_mode(mode)
 
@@ -187,13 +187,13 @@ class Ui_Dialog(generate_display):
             self.set_mode('print_title', 'readytitle')
         elif self.get_mode() in ['print_title', 'print_body']:
             self.refresh_ui(gui_textlist.get('print_input', gui_textlist['error']))
-            self.make_voice('')
+            self.call_voice = ''
             self.input_text = print_streaming()
             if self.input_text in script:
                 self.set_mode(self.get_mode(), script[self.input_text])
             else:
                 self.add_log(self.input_text + '\n' + script['isright'])
-                self.make_voice(self.input_text + '\n' + script['isright'])
+                self.call_voice = self.input_text + '\n' + script['isright']
                 self.set_mode('isright', '')
         elif self.get_mode() == 'isright':
             if len(self.title) < 1:
@@ -205,7 +205,7 @@ class Ui_Dialog(generate_display):
 
     def btn_2(self) :
         if self.debug : print('<', __name__, '>', 'btn_2')
-        self.make_voice(self.current_voice)
+        self.call_voice = self.current_voice
 
     def btn_3(self) :
         if self.debug : print('<', __name__, '>', 'btn_3')
@@ -221,10 +221,10 @@ class Ui_Dialog(generate_display):
                 self.set_mode(self.get_mode(), script.get('empty_body', script['text_error']))
             else:
                 self.add_log(script['delete_guide_1'] + ' ' + self.body + ' ' + script['delete_guide_2'])
-                self.make_voice(script['delete_guide_1'] + ' ' + self.body + ' ' + script['delete_guide_2'])
+                self.call_voice = script['delete_guide_1'] + ' ' + self.body + ' ' + script['delete_guide_2']
                 self.set_mode('print_delete', '')
         elif self.get_mode() == 'print_delete':
-            self.make_voice(script['delete_process'])
+            self.call_voice = script['delete_process']
             if rollback_text() :
                 self.set_mode('print_body', 'delete_comp')
             else :

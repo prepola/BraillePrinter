@@ -16,23 +16,26 @@ def serial_init():
         timeout=0
         )
 
-def access_json(bool_data, name = ''):
-    with open('access.json', 'w') as j_handle:
-        data = json.load(j_handle)
-        if bool_data :
-            if !(bool(data['access'])):
-                if name != '':
-                    data['name'] = name
-                data['access'] = 'True'
-                j_handle.write(data)
-            else: data['access'] = 'False'
-        else :
-            if bool(data['access']):
-                data['access'] = 'False'
-                j_handle.write(data)
-            else:
-                print('invalid access')
-    return data['access']
+def access_json(bool_data):
+    return True
+
+# def access_json(bool_data, name = ''):
+#     with open('access.json', 'w') as j_handle:
+#         data = json.load(j_handle)
+#         if bool_data :
+#             if !(bool(data['access'])):
+#                 if name != '':
+#                     data['name'] = name
+#                 data['access'] = 'True'
+#                 j_handle.write(data)
+#             else: data['access'] = 'False'
+#         else :
+#             if bool(data['access']):
+#                 data['access'] = 'False'
+#                 j_handle.write(data)
+#             else:
+#                 print('invalid access')
+#     return data['access']
 
 def get_name():
     with open('access.json', 'w') as j_handle:
