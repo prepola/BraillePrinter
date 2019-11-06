@@ -8,7 +8,7 @@ import hbcvt as hc
 
 def serial_init():
     return serial.Serial(
-        port='COM1',
+        port='COM4',
         baudrate=115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
@@ -70,8 +70,10 @@ def print_con(name):
                     for consonant_data in word_data[1]:
                         for dot_data_6 in consonant_data[1]:
                             data_up = dot_index.index(dot_data_6[:3])
+                            data_up=str(data_up)
                             ser.write(data_up.encode('utf-8'))
                             data_down = dot_index.index(dot_data_6[3:])
+                            data_down=str(data_down)
                             ser.write(data_down.encode('utf-8'))
                             print(data_up, data_down)
                 ser.write('9'.encode('utf-8'))

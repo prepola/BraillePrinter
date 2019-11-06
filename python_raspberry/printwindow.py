@@ -42,7 +42,7 @@ script = {
         'text_error':'스크립트를 읽을 수 없습니다. 스크립트 파일을 확인해주세요'
 }
 
-credential_path = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
+credential_path = 'C:\\hanium project-3d7b2a095e96.json'
 
 def print_streaming():
     # self.call_voice = '')

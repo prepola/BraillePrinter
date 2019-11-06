@@ -15,7 +15,6 @@ def main():
     next_mode = 'main'
     app = QtWidgets.QApplication(sys.argv)
 
-
     change_display = {
         'print':printDialog,
         'extend':extendDialog,

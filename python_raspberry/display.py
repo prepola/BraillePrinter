@@ -59,6 +59,11 @@ btn_script_connect = {
     'error':'error'
 } 
 
+mode_info_script ={
+    'main':'음성 인식 점자 프린터 입니다. 각각의 버튼을 눌러 기능을 확인하시고 원하시는 기능을 선택하여 주십시오. 다시 들으시려면 좌측 상단 버튼을 눌러주세요',
+    'print_main':'음성 프린트에 진입하셨습니다. 이곳에서 음성으로 글을 작성할 수 있습니다. 각 버튼을 눌러 기능을 확인할 수 있고 다시 들으시려면 좌측 상단 버튼을 눌러주세요'
+}
+
 class generate_display(QtWidgets.QDialog):
     def __init__(self, mode, fontsize, parent=None):
         super(generate_display, self).__init__(parent)
@@ -70,6 +75,7 @@ class generate_display(QtWidgets.QDialog):
         self.play_voice = None
         self.current_voice = str()
         self.call_voice = str()
+        self.mode_script = ''
 
         self.mainDialog = QtWidgets.QDialog()
         self.mainDialog.resize(1024, 600)
@@ -119,11 +125,14 @@ class generate_display(QtWidgets.QDialog):
             self.mainBtn[i].clicked.connect(args[i])
 
     def get_mode(self):
+        print('getmode: {}'.format(self.mode))
         return self.mode
     
     def set_mode(self, mode):
         if self.debug : print('<', __name__, '>', 'set_mode:', mode)
         self.mode = mode
+        self.call_voice = self.mode_script = mode_info_script.get(self.mode, 'error')
+        self.make_voice()
 
     def set_infotext(self, data):
         if self.debug : print('<', __name__, '>', 'set_infotext:', data)
@@ -153,15 +162,22 @@ class generate_display(QtWidgets.QDialog):
 
     def make_voice_btn(self, func):
         self.run_flag = itertools.cycle([False, True]).__next__
+        self.current_func = None
         def voice():
-            if self.run_flag():
+            if func.__name__ == 'btn_2_func':
+                self.current_func = func.__name__
                 func(self)
-                self.call_voice = ''
-                self.make_voice()
             else:
-                print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
-                self.call_voice = btn_script_connect.get(func.__name__, 'error connect').get(self.mode, 'error script')
-                self.make_voice()
+                if self.current_func == func.__name__:
+                    func(self)
+                    print('버튼 인터럽트로 음성 재생을 중단함')
+                    self.call_voice = ''
+                    self.make_voice()
+                else:
+                    self.current_func = func.__name__
+                    print('play:{}, call:{}, curr:{}'.format(self.play_voice, self.call_voice, self.current_voice))
+                    self.call_voice = btn_script_connect.get(self.current_func, 'error connect').get(self.mode, 'error script')
+                    self.make_voice()
         return voice
 
     
