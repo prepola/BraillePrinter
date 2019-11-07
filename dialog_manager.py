@@ -13,6 +13,7 @@ from python_raspberry.extendwindow import Ui_Dialog as extendDialog
 def main():
     place_display = mainDialog
     next_mode = 'main'
+    item = None
     app = QtWidgets.QApplication(sys.argv)
 
     change_display = {
@@ -22,9 +23,11 @@ def main():
     }
 
     while 1:
-        ui = place_display(next_mode, 30)
+        prev_mode = next_mode
+        ui = place_display(next_mode, 30, title=item)
         app.exec_()
         next_mode = ui.mode
+        item = ui.sel_item
         print('*'*5, next_mode, '로 화면이 전환됩니다.', '*'*5)
 
         place_display = change_display.get(next_mode, change_display['main'])

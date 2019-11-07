@@ -37,6 +37,8 @@ script = {
 btn_1_script={
     'main':'음성 프린트를 진행하는 버튼입니다. 음성 프린트 실행을 위해 버튼을 한번 더 눌러주세요.',
     'print_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.',
+    'record_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.',
+    'doc_main':'새로운 파일로 기록합니다. 새 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
 }
 btn_2_script={
     'main':'재안내 버튼입니다.',
@@ -44,11 +46,15 @@ btn_2_script={
 }
 btn_3_script={
     'main':'녹음 프린트를 진행하는 버튼입니다. 녹음 프린트 실행을 위해 버튼을 한번 더 눌러주세요.',
-    'print_main':'기존 파일에 이어서 기록합니다. 기존 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
+    'print_main':'기존 파일에 이어서 기록합니다. 기존 파일로 시작을 위해 버튼을 한번 더 눌러주세요.',
+    'record_main':'기존 파일에 이어서 기록합니다. 기존 파일로 시작을 위해 버튼을 한번 더 눌러주세요.',
+    'doc_main':'기존 파일에 이어서 기록합니다. 기존 파일로 시작을 위해 버튼을 한번 더 눌러주세요.'
 }
 btn_4_script={
     'main':'문서 프린트를 진행하는 버튼입니다. 문서 프린트 실행을 위해 한번 더 눌러주세요.',
-    'print_main':'현재 선택을 취소하고 뒤로 돌아갑니다. 뒤로 가기 위해 한번 더 눌러주세요.'
+    'print_main':'현재 선택을 취소하고 뒤로 돌아갑니다. 뒤로 가기 위해 한번 더 눌러주세요.',
+    'record_main':'현재 선택을 취소하고 뒤로 돌아갑니다. 뒤로 가기 위해 한번 더 눌러주세요.',
+    'doc_main':'현재 선택을 취소하고 뒤로 돌아갑니다. 뒤로 가기 위해 한번 더 눌러주세요.'
 }
 
 btn_script_connect = {
@@ -60,8 +66,12 @@ btn_script_connect = {
 } 
 
 mode_info_script ={
-    'main':'음성 인식 점자 프린터 입니다. 각각의 버튼을 눌러 기능을 확인하시고 원하시는 기능을 선택하여 주십시오. 다시 들으시려면 좌측 상단 버튼을 눌러주세요',
-    'print_main':'음성 프린트에 진입하셨습니다. 이곳에서 음성으로 글을 작성할 수 있습니다. 각 버튼을 눌러 기능을 확인할 수 있고 다시 들으시려면 좌측 상단 버튼을 눌러주세요'
+    'main':'음성 인식 점자 프린터 입니다. 각각의 버튼을 눌러 기능을 확인하시고 원하시는 기능을 선택하여 주십시오. 다시 들으시려면 우측 상단 버튼을 눌러주세요',
+    'print_main':'음성 프린트에 진입하셨습니다. 이곳에서 음성으로 점자를 기록 할 수 있습니다. 각각의 버튼을 눌러 기능을 확인할 수 있고 다시 들으시려면 우측 상단 버튼을 눌러주세요',
+    'record_main':'녹음 프린트에 진입하셨습니다. 이곳에서 녹음 파일을 점자로 변환 할 수 있습니다. 각각의 버튼을 눌러 기능을 확인할 수 있고 다시 들으시려면 우측 상단 버튼을 눌러주세요',
+    'doc_main':'문서 프린트에 진입하셨습니다. 이곳에서 문서를 점자로 변환 할 수 있습니다. 각각의 버튼을 눌러 기능을 확인할 수 있고 다시 들으시려면 우측 상단 버튼을 눌러주세요',
+    'extend':'파일 브라우저입니다. 이곳에서 파일을 선택 할 수 있습니다. 좌측 상단 버튼과 좌측 하단 버튼으로 아이템을 선택 할 수 있고 결정하시려면 우측 상단 버튼을 눌러주세요',
+    'print':''
 }
 
 class generate_display(QtWidgets.QDialog):
@@ -76,6 +86,7 @@ class generate_display(QtWidgets.QDialog):
         self.current_voice = str()
         self.call_voice = str()
         self.mode_script = ''
+        self.sel_item = str()
 
         self.mainDialog = QtWidgets.QDialog()
         self.mainDialog.resize(1024, 600)
@@ -131,6 +142,7 @@ class generate_display(QtWidgets.QDialog):
     def set_mode(self, mode):
         if self.debug : print('<', __name__, '>', 'set_mode:', mode)
         self.mode = mode
+        self.current_func = None
         self.call_voice = self.mode_script = mode_info_script.get(self.mode, 'error')
         self.make_voice()
 
@@ -170,8 +182,7 @@ class generate_display(QtWidgets.QDialog):
             else:
                 if self.current_func == func.__name__:
                     func(self)
-                    print('버튼 인터럽트로 음성 재생을 중단함')
-                    self.call_voice = ''
+                    self.call_voice = self.mode_script
                     self.make_voice()
                 else:
                     self.current_func = func.__name__

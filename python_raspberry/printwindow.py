@@ -29,7 +29,7 @@ script = {
         'fatal':'음성인식을 실행할 수 없습니다.\ncredential path 및 Google Cloud Platform console을 확인해주세요.\n입력종료 버튼을 누르면 프린트과정이 종료됩니다.',
         'overtime':'입력 시간이 초과하였거나 입력에 실패하였습니다.\n다시 시도해주십시요.',
         'isright':'다음 내용이 맞습니까?',
-        'commit':'입력되었습니다. 다음줄로 이동합니다.',
+        'commit':'입력되었습니다. 다음 진행을 위해 버튼을 눌러주십시오',
         'end_not_save':'현재 진행하던 내용이 저장되지 않습니다. 종료하시려면 버튼을 한번 더 입력해 주세요',
         'end':'종료하시려면 버튼을 한번 더 입력해 주세요',
         'empty_title':'아무 내용도 입력되어 있지 않습니다. 먼저 입력시작 버튼으로 입력을 시작해주세요',
@@ -142,19 +142,19 @@ def access_json(bool_data, name=''):
     return True
 
 class Ui_Dialog(generate_display):
-    def __init__(self, mode, fontsize):
+    def __init__(self, mode, fontsize, title=None):
         super().__init__(mode, fontsize)
 
         self.end_flag = False
         self.input_text = str()
-        self.title = str()
+        self.title = title
         self.body = str()
 
         self.create_worktable()
         self.set_buttonsize()
         self.set_layout()
         self.set_clickevent(self.btn_1, self.btn_2, self.btn_3, self.btn_4)
-        self.set_mode('print', 'start')
+        self.set_mode('print', script.get('start',''))
 
     def create_worktable(self):
         self.workTable = QtWidgets.QTextBrowser(self.mainDialog)
@@ -178,8 +178,8 @@ class Ui_Dialog(generate_display):
             self.add_log(text)
             self.call_voice = text
             self.make_voice()
+        self.mode = mode
         self.refresh_ui(gui_textlist.get(mode, gui_textlist['error']))
-        return super().set_mode(mode)
 
     def add_log(self, text):
         if self.debug : print('<', __name__, '>', 'add_log:', text)
@@ -187,6 +187,8 @@ class Ui_Dialog(generate_display):
 
     def btn_1(self) :
         if self.debug : print('<', __name__, '>', 'btn_1')
+        self.call_voice = ''
+        self.make_voice()
         if self.get_mode() == 'print':
             self.set_mode('print_title', 'readytitle')
         elif self.get_mode() in ['print_title', 'print_body']:
@@ -198,6 +200,7 @@ class Ui_Dialog(generate_display):
             else:
                 self.add_log(self.input_text + '\n' + script['isright'])
                 self.call_voice = self.input_text + '\n' + script['isright']
+                self.make_voice()
                 self.set_mode('isright', '')
         elif self.get_mode() == 'isright':
             if len(self.title) < 1:

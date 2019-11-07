@@ -21,7 +21,7 @@ gui_textlist = {
 }
 
 class Ui_Dialog(generate_display):
-    def __init__(self, mode, fontsize):
+    def __init__(self, mode, fontsize, title=None):
         super().__init__(mode, fontsize)
         self.set_buttonsize()
         self.set_layout()
@@ -34,7 +34,12 @@ class Ui_Dialog(generate_display):
                 self.set_mode('print_main')
                 self.refresh_ui(gui_textlist[self.get_mode()])
             elif self.get_mode() == 'print_main':
-                self.set_mode('print')
+                self.mode = 'print'
+                self.mode_script = ''
+                self.mainDialog.close()
+            elif self.get_mode() == 'record_main':
+                self.mode = 'extend'
+                self.mode_script = ''
                 self.mainDialog.close()
         
         @self.make_voice_btn
@@ -53,7 +58,6 @@ class Ui_Dialog(generate_display):
         
         @self.make_voice_btn
         def btn_4_func(self) :
-            if self.debug : print('<', __name__, '>', 'btn_4')
             if self.get_mode() == 'main':
                 self.set_mode('doc_main')
                 self.refresh_ui(gui_textlist[self.get_mode()])
