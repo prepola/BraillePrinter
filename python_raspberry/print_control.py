@@ -59,7 +59,7 @@ def pop_text(title):
 
 def print_con(name):
     ser = serial_init()
-    dot_index = [[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
+    dot_index = [None,[0,0,0],[0,0,1],[0,1,0],[0,1,1],[1,0,0],[1,0,1],[1,1,0],[1,1,1]]
     state = str()
     dot_data_3 = []
     if access_json(True) :
@@ -72,11 +72,16 @@ def print_con(name):
                             data_up = dot_index.index(dot_data_6[:3])
                             data_up=str(data_up)
                             ser.write(data_up.encode('utf-8'))
+                            print(data_up,dot_data_6[:3],consonant_data[0])
                             data_down = dot_index.index(dot_data_6[3:])
                             data_down=str(data_down)
+                            print(data_down,dot_data_6[3:],consonant_data[0])
                             ser.write(data_down.encode('utf-8'))
-                            print(data_up, data_down)
-                ser.write('9'.encode('utf-8'))
+                step_line_flag = '9'
+                if ser.write(step_line_flag.encode('utf-8')) :
+                    print('9')
+                else:
+                    print('not 9')
                 state = 'Transfer complete'
             else :
                 state = 'No have body. waiting for next time'
@@ -85,6 +90,7 @@ def print_con(name):
     access_json(False)
     print(state)
 
-
 if __name__ == "__main__":
-    print_con('테스트')
+    # print_con('')
+    ser = serial_init()
+    ser.write('27439'.encode('utf-8'))

@@ -245,7 +245,9 @@ class Ui_Dialog(generate_display):
             self.end_flag = True
         elif self.end_flag:
             #init_json()
-            self.set_mode('main')
+            self.mode = 'main'
+            self.call_voice = ''
+            self.make_voice()
             self.mainDialog.close()
     
 def main():

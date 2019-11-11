@@ -128,8 +128,8 @@ class generate_display(QtWidgets.QDialog):
         self.mainLayout_2.addWidget(self.mainInfo, 0, 0, 1, 1)
         
         QtCore.QMetaObject.connectSlotsByName(self.mainDialog)
-        self.mainDialog.show() 
-        # self.mainDialog.showFullScreen()       
+        # self.mainDialog.show() 
+        self.mainDialog.showFullScreen()       
 
     def set_clickevent(self, *args):
         for i in range(4):

@@ -190,4 +190,4 @@ def record(file, credential_path):
     return result_text
 
 if __name__ == '__main__':
-    print(trans('C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'))
+    print(trans('C:\\hanium project-3d7b2a095e96.json'))

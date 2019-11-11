@@ -24,6 +24,7 @@ from google.cloud import texttospeech
 import pyaudio
 import wave
 import threading
+import io
 
 chunk = 1024
 
@@ -34,7 +35,7 @@ class run_voice(threading.Thread):
         Note: ssml must be well-formed according to:
             https://www.w3.org/TR/speech-synthesis/
         """
-        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:\\Users\\jk691\\Documents\\hanium project-3d7b2a095e96.json'
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'C:\\hanium project-3d7b2a095e96.json'
         # Instantiates a client
         client = texttospeech.TextToSpeechClient()
 
@@ -57,15 +58,17 @@ class run_voice(threading.Thread):
         response = client.synthesize_speech(synthesis_input, voice, audio_config)
 
         # open the file for reading.
-        with open('.\\output.wav', 'wb') as out:
-        # Write the response to the output file.
-            out.write(response.audio_content)
+        # with open('.\\output.wav', 'wb') as out:
+        # # Write the response to the output file.
+        #     out.write(response.audio_content)
+        self.audio_data = io.BytesIO(response.audio_content)
 
         threading.Thread.__init__(self,name=name)
         self.stop_event = threading.Event()
 
     def run (self):
-        wf = wave.open('.\\output.wav', 'rb')
+        # wf = wave.open('.\\output.wav', 'rb')
+        wf = wave.open(self.audio_data, 'rb')
 
         # create an audio object
         p = pyaudio.PyAudio()
